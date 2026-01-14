@@ -1,10 +1,12 @@
+"use client";
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Phone, Calendar, ArrowRight, CheckCircle } from "lucide-react";
 
 const timeSlots = [
-  "9:00 AM", "10:00 AM", "11:00 AM", 
+  "9:00 AM", "10:00 AM", "11:00 AM",
   "1:00 PM", "2:00 PM", "3:00 PM", "4:00 PM"
 ];
 
@@ -154,11 +156,10 @@ const CTASection = () => {
                         key={day.value}
                         type="button"
                         onClick={() => setSelectedDate(day.value)}
-                        className={`p-3 rounded-lg border text-sm font-medium transition-all ${
-                          selectedDate === day.value
+                        className={`p-3 rounded-lg border text-sm font-medium transition-all ${selectedDate === day.value
                             ? "border-accent bg-accent-tint accent-text glow-focus"
                             : "border-border bg-background text-body hover:border-accent/50"
-                        }`}
+                          }`}
                       >
                         {day.label}
                       </button>
@@ -177,11 +178,10 @@ const CTASection = () => {
                         key={time}
                         type="button"
                         onClick={() => setSelectedTime(time)}
-                        className={`p-2 rounded-lg border text-xs font-medium transition-all ${
-                          selectedTime === time
+                        className={`p-2 rounded-lg border text-xs font-medium transition-all ${selectedTime === time
                             ? "border-accent bg-accent-tint accent-text glow-focus"
                             : "border-border bg-background text-body hover:border-accent/50"
-                        }`}
+                          }`}
                       >
                         {time}
                       </button>

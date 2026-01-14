@@ -1,3 +1,5 @@
+"use client";
+
 import { useRef } from "react";
 import { Brain, Shield, BarChart3, Users, Headphones } from "lucide-react";
 import aiDiagram from "@/assets/ai-system-diagram.jpeg";
@@ -58,7 +60,7 @@ const Features = () => {
           <div className="relative rounded-2xl overflow-hidden shadow-xl border border-border bg-background p-2 sm:p-4">
             <div ref={scrollerRef} className="overflow-x-auto">
               <img
-                src={aiDiagram}
+                src={aiDiagram.src}
                 alt="AI-RD1 System Architecture"
                 className="min-w-[900px] sm:min-w-0 h-auto rounded-lg"
                 onLoad={centerScroll}

@@ -35,7 +35,7 @@ const Footer = () => {
         <div className="grid grid-cols-2 md:grid-cols-5 gap-8 lg:gap-12">
           {/* Logo & Description */}
           <div className="col-span-2 md:col-span-1">
-            <img src={logo} alt="AI-RD1" className="h-10 w-auto mb-4" />
+            <img src={logo.src} alt="AI-RD1" className="h-10 w-auto mb-4" />
             <p className="text-sm text-muted-text mb-4">
               AI-powered voice technology for modern businesses.
             </p>

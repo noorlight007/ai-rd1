@@ -1,7 +1,10 @@
+"use client";
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
 import logo from "@/assets/logo-removebg-preview.png";
+import Link from "next/link";
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -17,9 +20,9 @@ const Header = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20 lg:h-20 ">
           {/* Logo */}
-          <a href="/" className="flex items-center gap-2">
-            <img src={logo} alt="AI-RD1" className="h-20 lg:h-20 w-auto" />
-          </a>
+          <Link href="/" className="flex items-center gap-2">
+            <img src={logo.src} alt="AI-RD1" className="h-20 lg:h-20 w-auto" />
+          </Link>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-8">
