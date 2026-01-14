@@ -1,53 +1,107 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Phone, Calendar, ArrowRight, CheckCircle } from "lucide-react";
-
-const timeSlots = [
-  "9:00 AM", "10:00 AM", "11:00 AM",
-  "1:00 PM", "2:00 PM", "3:00 PM", "4:00 PM"
-];
+import { Phone, Calendar, ArrowRight, CheckCircle, Clock } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Calendar as CalendarComponent } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
+import { format } from "date-fns";
 
 const CTASection = () => {
   const [firstName, setFirstName] = useState("");
   const [phone, setPhone] = useState("");
+  const [companyName, setCompanyName] = useState("");
+  const [companySize, setCompanySize] = useState("");
+  const [agreed, setAgreed] = useState(false);
+
+  const [isScheduleMode, setIsScheduleMode] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
+
+  // Segmented Time Inputs
+  const [hour, setHour] = useState("");
+  const [minute, setMinute] = useState("");
+  const [period, setPeriod] = useState<"AM" | "PM">("AM");
+
   const [phoneSubmitted, setPhoneSubmitted] = useState(false);
-  const [selectedDate, setSelectedDate] = useState("");
-  const [selectedTime, setSelectedTime] = useState("");
   const [demoSubmitted, setDemoSubmitted] = useState(false);
 
-  const handlePhoneSubmit = (e: React.FormEvent) => {
+  // Focus management refs
+  const hourRef = useRef<HTMLInputElement>(null);
+  const minuteRef = useRef<HTMLInputElement>(null);
+
+  const handleHourChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let val = e.target.value.replace(/\D/g, "");
+    if (val === "") {
+      setHour("");
+      return;
+    }
+    if (val.length > 2) val = val.slice(0, 2);
+
+    if (parseInt(val, 10) > 12) val = "12";
+
+    setHour(val);
+
+    // Auto-advance
+    // if (val.length === 2 && minuteRef.current) {
+    //   minuteRef.current.focus();
+    // }
+  };
+
+  const handleHourBlur = () => {
+    if (hour === "") return;
+    let val = hour;
+    const num = parseInt(val, 12);
+    if (num >= 0 && num <= 9) {
+      val = val.padStart(2, "0");
+    }
+    setHour(val);
+  };
+
+  const handleMinuteChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let val = e.target.value.replace(/\D/g, "");
+    if (val === "") {
+      setMinute("");
+      return;
+    }
+    if (val.length > 2) val = val.slice(0, 2);
+
+    if (parseInt(val, 10) > 59) val = "59";
+
+    setMinute(val);
+  };
+
+  const handleMinuteBlur = () => {
+    if (minute === "") return;
+    let val = minute;
+    const num = parseInt(val, 10);
+    if (num >= 0 && num <= 9) {
+      val = val.padStart(2, "0");
+    }
+    setMinute(val);
+  };
+
+  const getFormattedTime = () => {
+    if (!hour || !minute) return "";
+    return `${hour}:${minute} ${period}`;
+  };
+
+  const handleCallNow = (e: React.FormEvent) => {
     e.preventDefault();
-    if (firstName.trim() && phone.trim()) {
+    if (firstName && phone && companyName && companySize && agreed) {
       setPhoneSubmitted(true);
     }
   };
 
-  const handleDemoSubmit = (e: React.FormEvent) => {
+  const handleScheduleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (selectedDate && selectedTime) {
+    if (firstName && phone && companyName && companySize && agreed && selectedDate && hour && minute) {
       setDemoSubmitted(true);
     }
   };
-
-  // Generate next 7 days for date picker
-  const getNextDays = () => {
-    const days = [];
-    const today = new Date();
-    for (let i = 1; i <= 7; i++) {
-      const date = new Date(today);
-      date.setDate(today.getDate() + i);
-      days.push({
-        value: date.toISOString().split('T')[0],
-        label: date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })
-      });
-    }
-    return days;
-  };
-
-  const availableDays = getNextDays();
 
   return (
     <section id="cta" className="py-16 lg:py-24 bg-alt">
@@ -62,64 +116,13 @@ const CTASection = () => {
           </p>
         </div>
 
-        {/* Two Column Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-5xl mx-auto">
-          {/* Left: Try AI Call */}
-          <div className="bg-card rounded-2xl p-8 border border-border-card shadow-sm">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-12 h-12 rounded-xl gradient-accent flex items-center justify-center">
-                <Phone className="w-6 h-6 text-accent-foreground" />
-              </div>
-              <div>
-                <h3 className="text-xl font-semibold text-headline">Try AI Call</h3>
-                <p className="text-sm text-muted-text">Get a call in under 60 seconds</p>
-              </div>
-            </div>
+        {/* Single Column Layout */}
+        <div className="max-w-3xl mx-auto">
+          <div className="bg-card rounded-2xl p-8 lg:p-10 border border-border-card shadow-lg transition-all duration-300">
 
-            {!phoneSubmitted ? (
-              <form onSubmit={handlePhoneSubmit} className="space-y-4">
-                <div>
-                  <label htmlFor="firstName" className="block text-sm font-medium text-headline mb-2">
-                    Your First Name
-                  </label>
-                  <Input
-                    id="firstName"
-                    type="text"
-                    placeholder="Steven"
-                    value={firstName}
-                    onChange={(e) => setFirstName(e.target.value)}
-                    className="h-12 text-base"
-                    autoComplete="given-name"
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="phone" className="block text-sm font-medium text-headline mb-2">
-                    Your Phone Number
-                  </label>
-                  <Input
-                    id="phone"
-                    type="tel"
-                    placeholder="+1 (555) 000-0000"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    className="h-12 text-base"
-                    autoComplete="tel"
-                  />
-                </div>
-
-                <Button type="submit" variant="cta" size="lg" className="w-full group">
-                  <Phone size={18} />
-                  Call Me Now
-                  <ArrowRight size={16} className="ml-1 transition-transform group-hover:translate-x-1" />
-                </Button>
-
-                <p className="text-xs text-muted-text text-center">
-                  By submitting, you agree to receive a call from AI-RD1 for demo purposes.
-                </p>
-              </form>
-            ) : (
-              <div className="text-center py-8">
+            {/* Success State - Call Now */}
+            {phoneSubmitted ? (
+              <div className="text-center py-8 animate-fade-in">
                 <div className="w-16 h-16 rounded-full accent-tint-bg flex items-center justify-center mx-auto mb-4">
                   <CheckCircle className="w-8 h-8 accent-text" />
                 </div>
@@ -128,80 +131,9 @@ const CTASection = () => {
                   Our AI will call you at <span className="font-medium">{phone}</span> within 60 seconds.
                 </p>
               </div>
-            )}
-          </div>
-
-          {/* Right: Book Demo */}
-          <div className="bg-card rounded-2xl p-8 border border-border-card shadow-sm">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-12 h-12 rounded-xl bg-primary flex items-center justify-center">
-                <Calendar className="w-6 h-6 text-primary-foreground" />
-              </div>
-              <div>
-                <h3 className="text-xl font-semibold text-headline">Book a Demo</h3>
-                <p className="text-sm text-muted-text">30-min personalized walkthrough</p>
-              </div>
-            </div>
-
-            {!demoSubmitted ? (
-              <form onSubmit={handleDemoSubmit} className="space-y-4">
-                {/* Date Selection */}
-                <div>
-                  <label className="block text-sm font-medium text-headline mb-2">
-                    Select a Date
-                  </label>
-                  <div className="grid grid-cols-2 gap-2">
-                    {availableDays.slice(0, 4).map((day) => (
-                      <button
-                        key={day.value}
-                        type="button"
-                        onClick={() => setSelectedDate(day.value)}
-                        className={`p-3 rounded-lg border text-sm font-medium transition-all ${selectedDate === day.value
-                            ? "border-accent bg-accent-tint accent-text glow-focus"
-                            : "border-border bg-background text-body hover:border-accent/50"
-                          }`}
-                      >
-                        {day.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Time Selection */}
-                <div>
-                  <label className="block text-sm font-medium text-headline mb-2">
-                    Select a Time
-                  </label>
-                  <div className="grid grid-cols-4 gap-2">
-                    {timeSlots.map((time) => (
-                      <button
-                        key={time}
-                        type="button"
-                        onClick={() => setSelectedTime(time)}
-                        className={`p-2 rounded-lg border text-xs font-medium transition-all ${selectedTime === time
-                            ? "border-accent bg-accent-tint accent-text glow-focus"
-                            : "border-border bg-background text-body hover:border-accent/50"
-                          }`}
-                      >
-                        {time}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <Button
-                  type="submit"
-                  variant="cta"
-                  size="lg"
-                  className="w-full"
-                  disabled={!selectedDate || !selectedTime}
-                >
-                  <Calendar size={18} />
-                  Schedule Demo
-                </Button>
-              </form>
-            ) : (
-              <div className="text-center py-8">
+            ) : demoSubmitted ? (
+              /* Success State - Demo Scheduled */
+              <div className="text-center py-8 animate-fade-in">
                 <div className="w-16 h-16 rounded-full accent-tint-bg flex items-center justify-center mx-auto mb-4">
                   <CheckCircle className="w-8 h-8 accent-text" />
                 </div>
@@ -209,15 +141,229 @@ const CTASection = () => {
                 <p className="text-body">
                   We'll see you on{" "}
                   <span className="font-medium">
-                    {new Date(selectedDate).toLocaleDateString("en-US", {
+                    {selectedDate && new Date(selectedDate).toLocaleDateString("en-US", {
                       weekday: "long",
                       month: "long",
                       day: "numeric",
                     })}
                   </span>{" "}
-                  at <span className="font-medium">{selectedTime}</span>.
+                  at <span className="font-medium">{getFormattedTime()}</span>.
                 </p>
               </div>
+            ) : (
+              /* Main Form */
+              <form onSubmit={isScheduleMode ? handleScheduleSubmit : handleCallNow} className="space-y-6">
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* First Name */}
+                  <div className="space-y-2">
+                    <label htmlFor="firstName" className="text-sm font-medium text-headline">
+                      First Name
+                    </label>
+                    <Input
+                      id="firstName"
+                      placeholder="Steven"
+                      value={firstName}
+                      onChange={(e) => setFirstName(e.target.value)}
+                      className="h-12 border-input focus:border-accent focus:ring-accent/20 transition-all font-medium"
+                      required
+                    />
+                  </div>
+
+                  {/* Phone Number */}
+                  <div className="space-y-2">
+                    <label htmlFor="phone" className="text-sm font-medium text-headline">
+                      Phone Number
+                    </label>
+                    <Input
+                      id="phone"
+                      type="tel"
+                      placeholder="+1 (555) 000-0000"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      className="h-12 border-input focus:border-accent focus:ring-accent/20 transition-all font-medium"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Company Name */}
+                  <div className="space-y-2">
+                    <label htmlFor="companyName" className="text-sm font-medium text-headline">
+                      Company Name
+                    </label>
+                    <Input
+                      id="companyName"
+                      placeholder="Acme Inc."
+                      value={companyName}
+                      onChange={(e) => setCompanyName(e.target.value)}
+                      className="h-12 border-input focus:border-accent focus:ring-accent/20 transition-all font-medium"
+                      required
+                    />
+                  </div>
+
+                  {/* Company Size */}
+                  <div className="space-y-2">
+                    <label htmlFor="companySize" className="text-sm font-medium text-headline">
+                      Company Size
+                    </label>
+                    <Select value={companySize} onValueChange={setCompanySize} required>
+                      <SelectTrigger className="h-12 border-input focus:ring-accent/20 focus:border-accent font-medium">
+                        <SelectValue placeholder="Select size" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="0-5">0-5 employees</SelectItem>
+                        <SelectItem value="5-9">5-9 employees</SelectItem>
+                        <SelectItem value="11-50">11-50 employees</SelectItem>
+                        <SelectItem value="20-50">20-50 employees</SelectItem>
+                        <SelectItem value="51-99">51-99 employees</SelectItem>
+                        <SelectItem value="100+">100+ employees</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                {/* Consent Checkbox */}
+                <div className="flex items-start space-x-3 p-1">
+                  <Checkbox
+                    id="terms"
+                    checked={agreed}
+                    onCheckedChange={(checked) => setAgreed(checked as boolean)}
+                    required
+                    className="mt-0.5 data-[state=checked]:bg-accent data-[state=checked]:border-accent"
+                  />
+                  <label
+                    htmlFor="terms"
+                    className="text-sm text-muted-text leading-tight peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer select-none"
+                  >
+                    I have agreed to receive calls & sms from AI-RD1.com
+                  </label>
+                </div>
+
+                {/* Action Buttons Toggle */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                  <Button
+                    type={isScheduleMode ? "button" : "submit"}
+                    variant={!isScheduleMode ? "cta" : "outline"}
+                    className={cn(
+                      "h-14 text-base font-semibold w-full transition-all duration-300 relative overflow-hidden",
+                      !isScheduleMode
+                        ? "shadow-lg shadow-accent/25 scale-[1.02] border-accent"
+                        : "border-border hover:bg-muted/50 text-muted-text hover:text-headline"
+                    )}
+                    onClick={() => setIsScheduleMode(false)}
+                  >
+                    {!isScheduleMode && <Phone className="mr-2 h-5 w-5 animate-pulse" />}
+                    Call Now
+                  </Button>
+
+                  <Button
+                    type="button"
+                    variant={isScheduleMode ? "cta" : "outline"}
+                    className={cn(
+                      "h-14 text-base font-semibold w-full transition-all duration-300",
+                      isScheduleMode
+                        ? "shadow-lg shadow-accent/25 scale-[1.02] border-accent"
+                        : "border-border hover:bg-muted/50 text-muted-text hover:text-headline"
+                    )}
+                    onClick={() => setIsScheduleMode(true)}
+                  >
+                    {isScheduleMode && <Calendar className="mr-2 h-5 w-5" />}
+                    Schedule Call
+                  </Button>
+                </div>
+
+                {/* Schedule Fields - Animated Reveal */}
+                <div className={cn(
+                  "grid grid-cols-1 md:grid-cols-2 gap-6 overflow-hidden transition-all duration-500 ease-in-out",
+                  isScheduleMode ? "max-h-[300px] opacity-100 pt-6 border-t border-border mt-6" : "max-h-0 opacity-0 pt-0 mt-0"
+                )}>
+                  {/* Date Picker */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-headline flex items-center gap-2">
+                      <Calendar className="w-4 h-4 text-accent" />
+                      Select Date
+                    </label>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant={"outline"}
+                          className={cn(
+                            "w-full h-12 justify-start text-left font-normal border-input hover:border-accent hover:bg-accent/5 transition-all text-muted-foreground",
+                            selectedDate && "text-headline border-accent bg-accent/5"
+                          )}
+                        >
+                          <Calendar className={cn("mr-2 h-4 w-4", selectedDate ? "text-accent" : "opacity-50")} />
+                          {selectedDate ? format(selectedDate, "PPP") : <span>Pick a date</span>}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <CalendarComponent
+                          mode="single"
+                          selected={selectedDate}
+                          onSelect={setSelectedDate}
+                          initialFocus
+                          disabled={(date) => date < new Date() || date < new Date("1900-01-01")}
+                          className="p-3 pointer-events-auto"
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+
+                  {/* Segmented Unique Time Input */}
+                  <div className="space-y-2 mr-1">
+                    <label className="text-sm font-medium text-headline flex items-center gap-2">
+                      <Clock className="w-4 h-4 text-accent" />
+                      Select Time
+                    </label>
+                    <div className="flex items-center h-12 w-full rounded-md border border-input bg-background ring-offset-background focus-within:ring-2 focus-within:ring-accent focus-within:ring-offset-2 focus-within:border-accent transition-all overflow-hidden group hover:border-accent/50 cursor-text ">
+                      {/* Hour */}
+                      <input
+                        ref={hourRef}
+                        type="text"
+                        inputMode="numeric"
+                        placeholder="HH"
+                        value={hour}
+                        onChange={handleHourChange}
+                        onBlur={handleHourBlur}
+                        onFocus={(e) => e.target.select()}
+                        className="w-full text-center bg-transparent border-none focus:outline-none text-headline font-semibold p-0 text-lg placeholder:text-muted-foreground/50 h-full"
+                      />
+                      <span className="text-muted-foreground font-bold pb-1">:</span>
+                      {/* Minute */}
+                      <input
+                        ref={minuteRef}
+                        type="text"
+                        inputMode="numeric"
+                        placeholder="MM"
+                        value={minute}
+                        onChange={handleMinuteChange}
+                        onBlur={handleMinuteBlur}
+                        onFocus={(e) => e.target.select()}
+                        className="w-full text-center bg-transparent border-none focus:outline-none text-headline font-semibold p-0 text-lg placeholder:text-muted-foreground/50 h-full"
+                      />
+                      {/* Period Toggle */}
+                      <button
+                        type="button"
+                        onClick={(e) => { e.stopPropagation(); setPeriod(prev => prev === "AM" ? "PM" : "AM"); }}
+                        className="h-full px-4 text-xl font-bold text-accent border-l border-border transition-colors w-16"
+                      >
+                        {period}
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Submit Button for Schedule */}
+                  <div className="md:col-span-2 pt-2">
+                    <Button type="submit" variant="cta" size="lg" className="w-full h-14 text-lg group">
+                      Confirm Schedule
+                      <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
+                    </Button>
+                  </div>
+                </div>
+
+              </form>
             )}
           </div>
         </div>
