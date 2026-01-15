@@ -23,6 +23,7 @@ const CTASection = () => {
 
   const [isScheduleMode, setIsScheduleMode] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
 
   // Segmented Time Inputs
   const [hour, setHour] = useState("");
@@ -333,7 +334,7 @@ const CTASection = () => {
                       <Calendar className="w-4 h-4 text-accent" />
                       Select Date
                     </label>
-                    <Popover>
+                    <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
                       <PopoverTrigger asChild>
                         <Button
                           variant={"outline"}
@@ -350,7 +351,10 @@ const CTASection = () => {
                         <CalendarComponent
                           mode="single"
                           selected={selectedDate}
-                          onSelect={setSelectedDate}
+                          onSelect={(date) => {
+                            setSelectedDate(date);
+                            setIsCalendarOpen(false);
+                          }}
                           initialFocus
                           disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
                           className="p-3 pointer-events-auto"
