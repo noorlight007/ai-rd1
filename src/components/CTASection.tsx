@@ -10,6 +10,9 @@ import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
+import axios from "axios";
+
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
 const CTASection = () => {
   const [firstName, setFirstName] = useState("");
@@ -89,18 +92,57 @@ const CTASection = () => {
     return `${hour}:${minute} ${period}`;
   };
 
-  const handleCallNow = (e: React.FormEvent) => {
+  const handleCallNow = async (e: React.FormEvent) => {
     e.preventDefault();
     if (firstName && phone && companyName && companySize && agreed) {
-      setPhoneSubmitted(true);
+      try {
+        const response = await axios.post(`${BASE_URL}/interview/client/call/`, {
+          name: firstName,
+          phone: phone,
+          company_name: companyName,
+          company_size: companySize,
+          call_type: "NOW",
+        });
+        if (response.status === 200 || response.status === 201) {
+          setPhoneSubmitted(true);
+        }
+      } catch (error) {
+        console.error("Error making call", error);
+      }
     }
   };
 
-  const handleScheduleSubmit = (e: React.FormEvent) => {
+  const handleScheduleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (firstName && phone && companyName && companySize && agreed && selectedDate && hour && minute) {
-      setDemoSubmitted(true);
+      const scheduledDate = new Date(selectedDate);
+      let hours = parseInt(hour, 10);
+      if (period === "PM" && hours < 12) hours += 12;
+      if (period === "AM" && hours === 12) hours = 0;
+      scheduledDate.setHours(hours, parseInt(minute, 10), 0, 0);
+
+      try {
+        const response = await axios.post(`${BASE_URL}/interview/client/call/`, {
+          name: firstName,
+          phone: phone,
+          company_name: companyName,
+          company_size: companySize,
+          scheduled_at: scheduledDate.toISOString(),
+          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+          call_type: "SCHEDULE",
+        });
+        if (response.status === 200 || response.status === 201) {
+          setDemoSubmitted(true);
+        }
+      } catch (error) {
+        console.error("Error scheduling demo", error);
+      }
     }
+  };
+
+  const handleBack = () => {
+    setPhoneSubmitted(false);
+    setDemoSubmitted(false);
   };
 
   return (
@@ -127,9 +169,12 @@ const CTASection = () => {
                   <CheckCircle className="w-8 h-8 accent-text" />
                 </div>
                 <h4 className="text-lg font-semibold text-headline mb-2">Call Incoming{firstName ? `, ${firstName}` : ""}!</h4>
-                <p className="text-body">
+                <p className="text-body mb-6">
                   Our AI will call you at <span className="font-medium">{phone}</span> within 60 seconds.
                 </p>
+                <Button onClick={handleBack} variant="outline" className="min-w-[100px]">
+                  Back
+                </Button>
               </div>
             ) : demoSubmitted ? (
               /* Success State - Demo Scheduled */
@@ -138,7 +183,7 @@ const CTASection = () => {
                   <CheckCircle className="w-8 h-8 accent-text" />
                 </div>
                 <h4 className="text-lg font-semibold text-headline mb-2">Demo Scheduled!</h4>
-                <p className="text-body">
+                <p className="text-body mb-6">
                   We'll see you on{" "}
                   <span className="font-medium">
                     {selectedDate && new Date(selectedDate).toLocaleDateString("en-US", {
@@ -149,6 +194,9 @@ const CTASection = () => {
                   </span>{" "}
                   at <span className="font-medium">{getFormattedTime()}</span>.
                 </p>
+                <Button onClick={handleBack} variant="outline" className="min-w-[100px]">
+                  Back
+                </Button>
               </div>
             ) : (
               /* Main Form */
@@ -304,7 +352,7 @@ const CTASection = () => {
                           selected={selectedDate}
                           onSelect={setSelectedDate}
                           initialFocus
-                          disabled={(date) => date < new Date() || date < new Date("1900-01-01")}
+                          disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
                           className="p-3 pointer-events-auto"
                         />
                       </PopoverContent>
