@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Phone, Calendar, ArrowRight, CheckCircle, Clock } from "lucide-react";
+import { Phone, Calendar, ArrowRight, CheckCircle, Clock, Loader2, XCircle } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
@@ -24,6 +24,8 @@ const CTASection = () => {
   const [isScheduleMode, setIsScheduleMode] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   // Segmented Time Inputs
   const [hour, setHour] = useState("");
@@ -95,7 +97,9 @@ const CTASection = () => {
 
   const handleCallNow = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrorMessage(null);
     if (firstName && phone && companyName && companySize && agreed) {
+      setIsLoading(true);
       try {
         const response = await axios.post(`${BASE_URL}/interview/client/call/`, {
           name: firstName,
@@ -107,15 +111,22 @@ const CTASection = () => {
         if (response.status === 200 || response.status === 201) {
           setPhoneSubmitted(true);
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error("Error making call", error);
+        if (error.response?.data?.detail) {
+          setErrorMessage(error.response.data.detail);
+        }
+      } finally {
+        setIsLoading(false);
       }
     }
   };
 
   const handleScheduleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrorMessage(null);
     if (firstName && phone && companyName && companySize && agreed && selectedDate && hour && minute) {
+      setIsLoading(true);
       const scheduledDate = new Date(selectedDate);
       let hours = parseInt(hour, 10);
       if (period === "PM" && hours < 12) hours += 12;
@@ -135,8 +146,13 @@ const CTASection = () => {
         if (response.status === 200 || response.status === 201) {
           setDemoSubmitted(true);
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error("Error scheduling demo", error);
+        if (error.response?.data?.detail) {
+          setErrorMessage(error.response.data.detail);
+        }
+      } finally {
+        setIsLoading(false);
       }
     }
   };
@@ -144,6 +160,7 @@ const CTASection = () => {
   const handleBack = () => {
     setPhoneSubmitted(false);
     setDemoSubmitted(false);
+    setErrorMessage(null);
   };
 
   return (
@@ -194,6 +211,20 @@ const CTASection = () => {
                     })}
                   </span>{" "}
                   at <span className="font-medium">{getFormattedTime()}</span>.
+                </p>
+                <Button onClick={handleBack} variant="outline" className="min-w-[100px]">
+                  Back
+                </Button>
+              </div>
+            ) : errorMessage ? (
+              /* Error State */
+              <div className="text-center py-8 animate-fade-in">
+                <div className="w-16 h-16 rounded-full bg-red-100 dark:bg-red-900/20 flex items-center justify-center mx-auto mb-4">
+                  <XCircle className="w-8 h-8 text-red-600 dark:text-red-400" />
+                </div>
+                <h4 className="text-lg font-semibold text-headline mb-2">Error</h4>
+                <p className="text-body mb-6">
+                  {errorMessage}
                 </p>
                 <Button onClick={handleBack} variant="outline" className="min-w-[100px]">
                   Back
@@ -302,8 +333,13 @@ const CTASection = () => {
                         : "border-border hover:bg-muted/50 text-muted-text hover:text-headline"
                     )}
                     onClick={() => setIsScheduleMode(false)}
+                    disabled={isLoading}
                   >
-                    {!isScheduleMode && <Phone className="mr-2 h-5 w-5 animate-pulse" />}
+                    {!isScheduleMode && isLoading ? (
+                      <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                    ) : !isScheduleMode ? (
+                      <Phone className="mr-2 h-5 w-5 animate-pulse" />
+                    ) : null}
                     Call Now
                   </Button>
 
@@ -317,8 +353,13 @@ const CTASection = () => {
                         : "border-border hover:bg-muted/50 text-muted-text hover:text-headline"
                     )}
                     onClick={() => setIsScheduleMode(true)}
+                    disabled={isLoading}
                   >
-                    {isScheduleMode && <Calendar className="mr-2 h-5 w-5" />}
+                    {isScheduleMode && isLoading ? (
+                      <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                    ) : isScheduleMode ? (
+                      <Calendar className="mr-2 h-5 w-5" />
+                    ) : null}
                     Schedule Call
                   </Button>
                 </div>
@@ -408,9 +449,15 @@ const CTASection = () => {
 
                   {/* Submit Button for Schedule */}
                   <div className="md:col-span-2 pt-2">
-                    <Button type="submit" variant="cta" size="lg" className="w-full h-14 text-lg group">
-                      Confirm Schedule
-                      <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
+                    <Button type="submit" variant="cta" size="lg" className="w-full h-14 text-lg group" disabled={isLoading}>
+                      {isLoading ? (
+                        <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                      ) : (
+                        <>
+                          Confirm Schedule
+                          <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
+                        </>
+                      )}
                     </Button>
                   </div>
                 </div>
