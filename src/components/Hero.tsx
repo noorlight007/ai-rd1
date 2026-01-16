@@ -49,9 +49,9 @@ const Hero = () => {
               <ArrowRight size={18} className="ml-1 transition-transform group-hover:translate-x-1" />
             </Button>
             </Link>
-            <Button variant="ctaSecondary" size="xl" className="w-full sm:w-auto bg-white/10 border-white/30 text-white hover:bg-white/20">
+            {/* <Button variant="ctaSecondary" size="xl" className="w-full sm:w-auto bg-white/10 border-white/30 text-white hover:bg-white/20">
               Book a Demo
-            </Button>
+            </Button> */}
           </div>
 
           {/* Trust indicators */}
