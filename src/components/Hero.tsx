@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Phone, ArrowRight } from "lucide-react";
-
+import Link from "next/link";
 const Hero = () => {
   return (
     <section className="relative pt-24 lg:pt-32 pb-16 lg:pb-24 overflow-hidden">
@@ -42,11 +42,13 @@ const Hero = () => {
 
           {/* CTAs */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in" style={{ animationDelay: "0.3s" }}>
+            <Link href="#cta">
             <Button variant="cta" size="xl" className="w-full sm:w-auto group">
               <Phone size={20} />
               Try a Free Call
               <ArrowRight size={18} className="ml-1 transition-transform group-hover:translate-x-1" />
             </Button>
+            </Link>
             <Button variant="ctaSecondary" size="xl" className="w-full sm:w-auto bg-white/10 border-white/30 text-white hover:bg-white/20">
               Book a Demo
             </Button>
