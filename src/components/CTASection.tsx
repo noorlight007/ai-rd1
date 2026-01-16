@@ -18,6 +18,7 @@ const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
 const CTASection = () => {
   const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [phone, setPhone] = useState("");
   const [companyName, setCompanyName] = useState("");
   const [companySize, setCompanySize] = useState("");
@@ -107,13 +108,13 @@ const CTASection = () => {
   const handleCallNow = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage(null);
-    if (firstName && phone && companyName && companySize && agreed) {
+    if (firstName && lastName && phone && companyName && companySize && agreed) {
       setIsLoading(true);
       const dialCode = getCountryDialCode(countryIso);
       const fullPhone = `${dialCode}${phone}`;
       try {
         const response = await axios.post(`${BASE_URL}/interview/client/call/`, {
-          name: firstName,
+          name: `${firstName} ${lastName}`,
           phone: fullPhone,
           company_name: companyName,
           company_size: companySize,
@@ -136,7 +137,7 @@ const CTASection = () => {
   const handleScheduleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage(null);
-    if (firstName && phone && companyName && companySize && agreed && selectedDate && hour && minute) {
+    if (firstName && lastName && phone && companyName && companySize && agreed && selectedDate && hour && minute) {
       setIsLoading(true);
       const dialCode = getCountryDialCode(countryIso);
       const fullPhone = `${dialCode}${phone}`;
@@ -148,7 +149,7 @@ const CTASection = () => {
 
       try {
         const response = await axios.post(`${BASE_URL}/interview/client/call/`, {
-          name: firstName,
+          name: `${firstName} ${lastName}`,
           phone: fullPhone,
           company_name: companyName,
           company_size: companySize,
@@ -263,8 +264,23 @@ const CTASection = () => {
                     />
                   </div>
 
-                  {/* Phone Number */}
+                  {/* Last Name */}
                   <div className="space-y-2">
+                    <label htmlFor="lastName" className="text-sm font-medium text-headline">
+                      Last Name
+                    </label>
+                    <Input
+                      id="lastName"
+                      placeholder="Smith"
+                      value={lastName}
+                      onChange={(e) => setLastName(e.target.value)}
+                      className="h-12 border-input focus:border-accent focus:ring-accent/20 transition-all font-medium"
+                      required
+                    />
+                  </div>
+
+                  {/* Phone Number */}
+                  <div className="space-y-2 col-span-1 md:col-span-2">
                     <label htmlFor="phone" className="text-sm font-medium text-headline">
                       Phone Number
                     </label>
@@ -275,18 +291,19 @@ const CTASection = () => {
                             variant="outline"
                             role="combobox"
                             aria-expanded={openCombobox}
-                            className="w-[140px] h-12 justify-between border-input focus:ring-accent/20 focus:border-accent font-medium px-3"
+                            className="w-[300px] h-12 justify-between border-input focus:ring-accent/20 focus:border-accent font-medium px-3"
                           >
                             <span className="flex items-center gap-2">
-                              <span className="text-lg mb-1">{getCountryDialCode(countryIso) === "+1" && countryIso !== "US" && countryIso !== "CA" ? countries.find(c => c.code === countryIso)?.flag : countries.find(c => c.code === countryIso)?.flag}</span>
-                              <span>{getCountryDialCode(countryIso)}</span>
+                              {/* <span className="text-lg mb-1">{getCountryDialCode(countryIso) === "+1" && countryIso !== "US" && countryIso !== "CA" ? countries.find(c => c.code === countryIso)?.flag : countries.find(c => c.code === countryIso)?.flag}</span> */}
+                              <span className="">{countries.find(c => c.code === countryIso)?.name}</span>
+                              <span className="text-muted-foreground">{getCountryDialCode(countryIso)}</span>
                             </span>
-                            <ChevronDown className="ml-2 h-4 w-4 opacity-50" />
+                            <ChevronDown className="ml-2 h-4 w-4 opacity-50 shrink-0" />
                           </Button>
                         </PopoverTrigger>
-                        <PopoverContent className="w-[144px] p-0">
+                        <PopoverContent className="w-[300] p-0">
                           <Command>
-                            <CommandInput placeholder="Search code..." />
+                            <CommandInput placeholder="Search country & country code..." />
                             <CommandList>
                               <CommandEmpty>No country found.</CommandEmpty>
                               <CommandGroup>
@@ -300,9 +317,10 @@ const CTASection = () => {
                                     }}
                                     className="group"
                                   >
-                                    <div className="flex items-center justify-center gap-2 w-full">
-                                      <span className="text-lg w-4 text-center mb-1">{country.flag}</span>
-                                      <span className="text-muted-foreground whitespace-nowrap text-center group-data-[selected=true]:text-white transition-colors">{country.dial_code}</span>
+                                    <div className="flex items-center gap-2 w-full">
+                                      {/* <span className="text-lg w-4 text-center mb-1 shrink-0">{country.flag}</span> */}
+                                      <span className="text-nowrap">{country.name}</span>
+                                      <span className="text-muted-foreground whitespace-nowrap text-center group-data-[selected=true]:text-white transition-colors ml-auto">{country.dial_code}</span>
                                     </div>
                                     <Check
                                       className={cn(
