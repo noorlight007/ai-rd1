@@ -286,7 +286,7 @@ const CTASection = () => {
                         </PopoverTrigger>
                         <PopoverContent className="w-[144px] p-0">
                           <Command>
-                            <CommandInput placeholder="Search country..." />
+                            <CommandInput placeholder="Search code..." />
                             <CommandList>
                               <CommandEmpty>No country found.</CommandEmpty>
                               <CommandGroup>
