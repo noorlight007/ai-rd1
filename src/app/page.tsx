@@ -4,6 +4,7 @@ import Features from "@/components/Features";
 import UseCases from "@/components/UseCases";
 import CTASection from "@/components/CTASection";
 import Footer from "@/components/Footer";
+import Pricing from "@/components/Pricing";
 
 export default function Home() {
     return (
@@ -13,6 +14,7 @@ export default function Home() {
                 <Hero />
                 <Features />
                 <UseCases />
+                <Pricing />
                 <CTASection />
             </main>
             <Footer />
