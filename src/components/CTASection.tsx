@@ -293,7 +293,7 @@ const CTASection = () => {
                                 {countries.map((country) => (
                                   <CommandItem
                                     key={country.code}
-                                    value={`${country.name} ${country.dial_code}`}
+                                    value={`${country.name} ${country.dial_code} ${country.flag} ${country.code}`}
                                     onSelect={(currentValue) => {
                                       setCountryIso(country.code);
                                       setOpenCombobox(false);
