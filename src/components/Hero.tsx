@@ -1,7 +1,18 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { Phone, ArrowRight } from "lucide-react";
 import Link from "next/link";
+
 const Hero = () => {
+  const scrollToCTA = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    const element = document.getElementById("cta");
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   return (
     <section className="relative pt-24 lg:pt-32 pb-16 lg:pb-24 overflow-hidden">
       {/* Background Video */}
@@ -14,10 +25,10 @@ const Hero = () => {
       >
         <source src="/videos/ai-video.mov" type="video/mp4" />
       </video>
-      
+
       {/* Dark Overlay for readability */}
       <div className="absolute inset-0 bg-black/70" />
-      
+
       <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center">
           {/* Badge */}
@@ -36,19 +47,22 @@ const Hero = () => {
 
           {/* Subheadline */}
           <p className="text-lg sm:text-xl text-white/80 max-w-2xl mx-auto mb-8 animate-fade-in" style={{ animationDelay: "0.2s" }}>
-            AI-RD1 makes and receives calls for your business with human-like conversations. 
+            AI-RD1 makes and receives calls for your business with human-like conversations.
             Scale your customer outreach, support, and engagement—24/7.
           </p>
 
           {/* CTAs */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in" style={{ animationDelay: "0.3s" }}>
-            <Link href="#cta">
-            <Button variant="cta" size="xl" className="w-full sm:w-auto group">
+            <Button
+              variant="cta"
+              size="xl"
+              className="w-full sm:w-auto group"
+              onClick={scrollToCTA}
+            >
               <Phone size={20} />
               Try a Free Call
               <ArrowRight size={18} className="ml-1 transition-transform group-hover:translate-x-1" />
             </Button>
-            </Link>
             {/* <Button variant="ctaSecondary" size="xl" className="w-full sm:w-auto bg-white/10 border-white/30 text-white hover:bg-white/20">
               Book a Demo
             </Button> */}
