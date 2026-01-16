@@ -3,14 +3,16 @@
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Phone, Calendar, ArrowRight, CheckCircle, Clock, Loader2, XCircle } from "lucide-react";
+import { Phone, Calendar, ArrowRight, CheckCircle, Clock, Loader2, XCircle, ChevronDown, Check } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import axios from "axios";
+import { countries } from "@/lib/countries";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
@@ -26,6 +28,9 @@ const CTASection = () => {
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const [countryIso, setCountryIso] = useState("US");
+  const [openCombobox, setOpenCombobox] = useState(false);
 
   // Segmented Time Inputs
   const [hour, setHour] = useState("");
@@ -95,15 +100,21 @@ const CTASection = () => {
     return `${hour}:${minute} ${period}`;
   };
 
+  const getCountryDialCode = (iso: string) => {
+    return countries.find((c) => c.code === iso)?.dial_code || "+1";
+  };
+
   const handleCallNow = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage(null);
     if (firstName && phone && companyName && companySize && agreed) {
       setIsLoading(true);
+      const dialCode = getCountryDialCode(countryIso);
+      const fullPhone = `${dialCode}${phone}`;
       try {
         const response = await axios.post(`${BASE_URL}/interview/client/call/`, {
           name: firstName,
-          phone: phone,
+          phone: fullPhone,
           company_name: companyName,
           company_size: companySize,
           call_type: "NOW",
@@ -127,6 +138,8 @@ const CTASection = () => {
     setErrorMessage(null);
     if (firstName && phone && companyName && companySize && agreed && selectedDate && hour && minute) {
       setIsLoading(true);
+      const dialCode = getCountryDialCode(countryIso);
+      const fullPhone = `${dialCode}${phone}`;
       const scheduledDate = new Date(selectedDate);
       let hours = parseInt(hour, 10);
       if (period === "PM" && hours < 12) hours += 12;
@@ -136,7 +149,7 @@ const CTASection = () => {
       try {
         const response = await axios.post(`${BASE_URL}/interview/client/call/`, {
           name: firstName,
-          phone: phone,
+          phone: fullPhone,
           company_name: companyName,
           company_size: companySize,
           scheduled_at: scheduledDate.toISOString(),
@@ -188,7 +201,7 @@ const CTASection = () => {
                 </div>
                 <h4 className="text-lg font-semibold text-headline mb-2">Call Incoming{firstName ? `, ${firstName}` : ""}!</h4>
                 <p className="text-body mb-6">
-                  Our AI will call you at <span className="font-medium">{phone}</span> within 60 seconds.
+                  Our AI will call you at <span className="font-medium">{getCountryDialCode(countryIso)}{phone}</span> within 60 seconds.
                 </p>
                 <Button onClick={handleBack} variant="outline" className="min-w-[100px]">
                   Back
@@ -255,15 +268,65 @@ const CTASection = () => {
                     <label htmlFor="phone" className="text-sm font-medium text-headline">
                       Phone Number
                     </label>
-                    <Input
-                      id="phone"
-                      type="tel"
-                      placeholder="+1 (555) 000-0000"
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
-                      className="h-12 border-input focus:border-accent focus:ring-accent/20 transition-all font-medium"
-                      required
-                    />
+                    <div className="flex gap-2">
+                      <Popover open={openCombobox} onOpenChange={setOpenCombobox}>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="outline"
+                            role="combobox"
+                            aria-expanded={openCombobox}
+                            className="w-[140px] h-12 justify-between border-input focus:ring-accent/20 focus:border-accent font-medium px-3"
+                          >
+                            <span className="flex items-center gap-2">
+                              <span className="text-lg mb-1">{getCountryDialCode(countryIso) === "+1" && countryIso !== "US" && countryIso !== "CA" ? countries.find(c => c.code === countryIso)?.flag : countries.find(c => c.code === countryIso)?.flag}</span>
+                              <span>{getCountryDialCode(countryIso)}</span>
+                            </span>
+                            <ChevronDown className="ml-2 h-4 w-4 opacity-50" />
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-[144px] p-0">
+                          <Command>
+                            <CommandInput placeholder="Search country..." />
+                            <CommandList>
+                              <CommandEmpty>No country found.</CommandEmpty>
+                              <CommandGroup>
+                                {countries.map((country) => (
+                                  <CommandItem
+                                    key={country.code}
+                                    value={`${country.name} ${country.dial_code}`}
+                                    onSelect={(currentValue) => {
+                                      setCountryIso(country.code);
+                                      setOpenCombobox(false);
+                                    }}
+                                    className="group"
+                                  >
+                                    <div className="flex items-center justify-center gap-2 w-full">
+                                      <span className="text-lg w-4 text-center mb-1">{country.flag}</span>
+                                      <span className="text-muted-foreground whitespace-nowrap text-center group-data-[selected=true]:text-white transition-colors">{country.dial_code}</span>
+                                    </div>
+                                    <Check
+                                      className={cn(
+                                        "ml-auto h-4 w-4 hidden",
+                                        countryIso === country.code ? "opacity-100" : "opacity-0"
+                                      )}
+                                    />
+                                  </CommandItem>
+                                ))}
+                              </CommandGroup>
+                            </CommandList>
+                          </Command>
+                        </PopoverContent>
+                      </Popover>
+                      <Input
+                        id="phone"
+                        type="tel"
+                        placeholder="(555) 000-0000"
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        className="h-12 border-input focus:border-accent focus:ring-accent/20 transition-all font-medium flex-1"
+                        required
+                      />
+                    </div>
                   </div>
                 </div>
 
