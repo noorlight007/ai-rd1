@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef, useCallback } from "react";
 import { Brain, Shield, BarChart3, Users, Headphones } from "lucide-react";
 import aiDiagram from "@/assets/ai-system-diagram.jpeg";
 
@@ -8,7 +8,8 @@ const features = [
   {
     icon: Brain,
     title: "AI Call Engine",
-    description: "Advanced natural language processing enables human-like conversations at scale.",
+    description:
+      "Advanced natural language processing enables human-like conversations at scale.",
   },
   {
     icon: Headphones,
@@ -18,12 +19,14 @@ const features = [
   {
     icon: Users,
     title: "AI Memory",
-    description: "Full CRM integration with conversation history for personalized interactions.",
+    description:
+      "Full CRM integration with conversation history for personalized interactions.",
   },
   {
     icon: Shield,
     title: "Compliance by Design",
-    description: "Built-in compliance features ensure every call meets regulatory standards.",
+    description:
+      "Built-in compliance features ensure every call meets regulatory standards.",
   },
   {
     icon: BarChart3,
@@ -34,13 +37,34 @@ const features = [
 
 const Features = () => {
   const scrollerRef = useRef<HTMLDivElement | null>(null);
+  const imgRef = useRef<HTMLImageElement | null>(null);
 
-  const centerScroll = () => {
+  const centerScroll = useCallback(() => {
     const el = scrollerRef.current;
     if (!el) return;
-    el.scrollTo({ left: (el.scrollWidth - el.clientWidth) / 2, behavior: "smooth" });
+    el.scrollLeft = (el.scrollWidth - el.clientWidth) / 2;
+  }, []);
 
-  };
+  useEffect(() => {
+    // Center after mount (layout might not be ready immediately)
+    const raf = requestAnimationFrame(() => centerScroll());
+
+    // If image is already cached, onLoad may not fire; handle that too.
+    if (imgRef.current?.complete) centerScroll();
+
+    // Fallback: small delay to ensure widths are computed
+    const t = window.setTimeout(() => centerScroll(), 50);
+
+    // Optional: keep centered if viewport size changes
+    const onResize = () => centerScroll();
+    window.addEventListener("resize", onResize);
+
+    return () => {
+      cancelAnimationFrame(raf);
+      window.clearTimeout(t);
+      window.removeEventListener("resize", onResize);
+    };
+  }, [centerScroll]);
 
   return (
     <section id="features" className="py-16 lg:py-24 bg-alt">
@@ -60,6 +84,7 @@ const Features = () => {
           <div className="relative rounded-2xl overflow-hidden shadow-xl border border-border bg-background p-2 sm:p-4">
             <div ref={scrollerRef} className="overflow-x-auto">
               <img
+                ref={imgRef}
                 src={aiDiagram.src}
                 alt="AI-RD1 System Architecture"
                 className="min-w-[900px] sm:min-w-0 h-auto rounded-lg"
@@ -93,3 +118,5 @@ const Features = () => {
 };
 
 export default Features;
+
+
