@@ -144,10 +144,7 @@ const Pricing = () => {
           ))}
         </div>
 
-        {/* Bottom note */}
-        <p className="text-center text-sm text-muted-text mt-8">
-          All plans include a 14-day free trial. No credit card required.
-        </p>
+        
       </div>
     </section>
   );
