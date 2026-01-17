@@ -38,7 +38,7 @@ const pricingTiers = [
   {
     name: "Enterprise",
     icon: Rocket,
-    price: "Custom pricing",
+    price: "Custom Pricing",
     unit: "",
     description: "Tailored solutions for large-scale operations.",
     minimumMinutes: "3,000+ minutes per month",
