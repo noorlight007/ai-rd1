@@ -5,10 +5,10 @@ const pricingTiers = [
   {
     name: "Small Business",
     icon: Building,
-    price: "£0.80",
-    unit: "/min",
-    description: "Perfect for growing businesses starting with AI calls",
-    minimumMinutes: "300 min/month",
+    price: "£0.75",
+    unit: " per minute + VAT",
+    description: "Ideal for growing businesses starting with AI voice calls.",
+    minimumMinutes: "300 minutes per month",
     features: [
       "CRM sync included",
       "Basic workflows",
@@ -21,13 +21,13 @@ const pricingTiers = [
   {
     name: "Mid Business",
     icon: Building2,
-    price: "£0.65",
-    unit: "/min",
-    description: "For teams scaling their voice automation",
-    minimumMinutes: "1,000 min/month",
+    price: "£0.75",
+    unit: " per minute + VAT",
+    description: "For teams scaling their voice automation.",
+    minimumMinutes: "1,000 minutes per month",
     features: [
       "Everything in Small Business",
-      "Automated tasks & summaries",
+      "Automated tasks & call summaries",
       "Advanced CRM integration",
       "Priority email support",
       "Detailed analytics dashboard",
@@ -38,10 +38,11 @@ const pricingTiers = [
   {
     name: "Enterprise",
     icon: Rocket,
-    price: "£0.50–£0.60",
-    unit: "/min",
-    description: "Custom solutions for large-scale operations",
-    minimumMinutes: "3,000+ min/month",
+    price: "Custom Pricing",
+    unit: "",
+    description: "Tailored solutions for large-scale operations.",
+    minimumMinutes: "3,000+ minutes per month",
+    subtext: "Volume discounts available",
     features: [
       "Everything in Mid Business",
       "SLA priority support",
@@ -108,6 +109,11 @@ const Pricing = () => {
                 <span className="text-muted-text">{tier.unit}</span>
               </div>
 
+              {/* Subtext for Enterprise */}
+              {"subtext" in tier && tier.subtext && (
+                <p className="text-sm text-accent mb-2">{tier.subtext}</p>
+              )}
+
               {/* Minimum */}
               <p className="text-sm text-muted-text mb-4">
                 Minimum: {tier.minimumMinutes}
@@ -138,10 +144,7 @@ const Pricing = () => {
           ))}
         </div>
 
-        {/* Bottom note */}
-        <p className="text-center text-sm text-muted-text mt-8">
-          All plans include a 14-day free trial. No credit card required.
-        </p>
+        
       </div>
     </section>
   );
