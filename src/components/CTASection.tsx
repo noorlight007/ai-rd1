@@ -51,8 +51,15 @@ const CTASection = () => {
   const companyNameRef = useRef<HTMLInputElement>(null);
   const companySizeRef = useRef<HTMLButtonElement>(null);
   const termsRef = useRef<HTMLDivElement>(null);
+  const resultRef = useRef<HTMLDivElement>(null);
   const dateTriggerRef = useRef<HTMLButtonElement>(null);
   const timeContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (phoneSubmitted || demoSubmitted || errorMessage) {
+      resultRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }, [phoneSubmitted, demoSubmitted, errorMessage]);
 
   const handleHourChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let val = e.target.value.replace(/\D/g, "");
@@ -347,18 +354,18 @@ const CTASection = () => {
 
   const handleBack = () => {
     // if (phoneSubmitted || demoSubmitted) {
-      setFirstName("");
-      setLastName("");
-      setPhone("");
-      setCompanyName("");
-      setCompanySize("");
-      setAgreed(false);
-      setSelectedDate(undefined);
-      setHour("");
-      setMinute("");
-      setPeriod("AM");
-      setCountryIso("US");
-      setFieldErrors({});
+    setFirstName("");
+    setLastName("");
+    setPhone("");
+    setCompanyName("");
+    setCompanySize("");
+    setAgreed(false);
+    setSelectedDate(undefined);
+    setHour("");
+    setMinute("");
+    setPeriod("AM");
+    setCountryIso("US");
+    setFieldErrors({});
     // }
     setPhoneSubmitted(false);
     setDemoSubmitted(false);
@@ -381,7 +388,7 @@ const CTASection = () => {
 
         {/* Single Column Layout */}
         <div className="max-w-3xl mx-auto">
-          <div className="bg-card rounded-2xl p-8 lg:p-10 border border-border-card shadow-lg transition-all duration-300">
+          <div ref={resultRef} className="bg-card rounded-2xl p-8 lg:p-10 border border-border-card shadow-lg transition-all duration-300">
 
             {/* Success State - Call Now */}
             {phoneSubmitted ? (
