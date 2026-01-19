@@ -32,6 +32,7 @@ const CTASection = () => {
 
   const [countryIso, setCountryIso] = useState("US");
   const [openCombobox, setOpenCombobox] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({});
 
   // Segmented Time Inputs
   const [hour, setHour] = useState("");
@@ -44,6 +45,14 @@ const CTASection = () => {
   // Focus management refs
   const hourRef = useRef<HTMLInputElement>(null);
   const minuteRef = useRef<HTMLInputElement>(null);
+  const firstNameRef = useRef<HTMLInputElement>(null);
+  const lastNameRef = useRef<HTMLInputElement>(null);
+  const phoneRef = useRef<HTMLInputElement>(null);
+  const companyNameRef = useRef<HTMLInputElement>(null);
+  const companySizeRef = useRef<HTMLButtonElement>(null);
+  const termsRef = useRef<HTMLDivElement>(null);
+  const dateTriggerRef = useRef<HTMLButtonElement>(null);
+  const timeContainerRef = useRef<HTMLDivElement>(null);
 
   const handleHourChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let val = e.target.value.replace(/\D/g, "");
@@ -108,67 +117,232 @@ const CTASection = () => {
   const handleCallNow = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage(null);
-    if (firstName && lastName && phone && companyName && companySize && agreed) {
-      setIsLoading(true);
-      const dialCode = getCountryDialCode(countryIso);
-      const fullPhone = `${dialCode}${phone}`;
-      try {
-        const response = await axios.post(`${BASE_URL}/interview/client/call/`, {
-          name: `${firstName} ${lastName}`,
-          phone: fullPhone,
-          company_name: companyName,
-          company_size: companySize,
-          call_type: "NOW",
-        });
-        if (response.status === 200 || response.status === 201) {
-          setPhoneSubmitted(true);
-        }
-      } catch (error: any) {
-        console.error("Error making call", error);
-        if (error.response?.data?.detail) {
+    setFieldErrors({});
+
+    const newFieldErrors: Record<string, string[]> = {};
+    let hasError = false;
+
+    if (!firstName && !lastName) {
+      newFieldErrors.name = ["This field is required"];
+      hasError = true;
+    }
+    // If only one name field is missing, we might want to flag it too, but the API error structure for "name" is unified.
+    // For specific field highlighting, if we attach error to "name", both inputs get red.
+    // Let's refine: verify individual if needed, but existing logic shares "fieldErrors.name".
+
+    if (!firstName) {
+      if (!newFieldErrors.name) newFieldErrors.name = ["This field is required"];
+      hasError = true;
+    }
+    if (!lastName) {
+      if (!newFieldErrors.name) newFieldErrors.name = ["This field is required"];
+      hasError = true;
+    }
+
+    if (!phone) {
+      newFieldErrors.phone = ["This field is required"];
+      hasError = true;
+    }
+    if (!companyName) {
+      newFieldErrors.company_name = ["This field is required"];
+      hasError = true;
+    }
+    if (!companySize) {
+      newFieldErrors.company_size = ["This field is required"];
+      hasError = true;
+    }
+    if (!agreed) {
+      newFieldErrors.agreed = ["This field is required"];
+      hasError = true;
+    }
+
+    if (hasError) {
+      setFieldErrors(newFieldErrors);
+
+      // Scroll to first error
+      if (newFieldErrors.name) {
+        firstNameRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+      } else if (newFieldErrors.phone) {
+        phoneRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+      } else if (newFieldErrors.company_name) {
+        companyNameRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+      } else if (newFieldErrors.company_size) {
+        companySizeRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+      } else if (newFieldErrors.agreed) {
+        termsRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+      return;
+    }
+
+    // if (firstName && lastName && phone && companyName && companySize && agreed) {
+    setIsLoading(true);
+    const dialCode = getCountryDialCode(countryIso);
+    const fullPhone = `${dialCode}${phone}`;
+    try {
+      const response = await axios.post(`${BASE_URL}/interview/client/call/`, {
+        name: `${firstName} ${lastName}`,
+        phone: fullPhone,
+        company_name: companyName,
+        company_size: companySize,
+        call_type: "NOW",
+      });
+      if (response.status === 200 || response.status === 201) {
+        setPhoneSubmitted(true);
+      }
+    } catch (error: any) {
+      console.error("Error making call", error);
+      if (error.response?.data) {
+        setFieldErrors(error.response.data);
+        if (error.response.data.detail) {
           setErrorMessage(error.response.data.detail);
         }
-      } finally {
-        setIsLoading(false);
+
+        // Scroll to first error
+        if (error.response.data.name) {
+          firstNameRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+          // If name error, maybe both? prioritize first name
+        } else if (error.response.data.phone) {
+          phoneRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+        } else if (error.response.data.company_name) {
+          companyNameRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+        } else if (error.response.data.company_size) {
+          companySizeRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+        } else if (error.response.data.agreed) {
+          termsRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
       }
+    } finally {
+      setIsLoading(false);
     }
+    // }
   };
 
   const handleScheduleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage(null);
-    if (firstName && lastName && phone && companyName && companySize && agreed && selectedDate && hour && minute) {
-      setIsLoading(true);
-      const dialCode = getCountryDialCode(countryIso);
-      const fullPhone = `${dialCode}${phone}`;
-      const scheduledDate = new Date(selectedDate);
+    setFieldErrors({});
+
+    // Client-side validation
+    let hasError = false;
+    const newFieldErrors: Record<string, string[]> = {};
+
+    if (!firstName) {
+      if (!newFieldErrors.name) newFieldErrors.name = ["This field is required"];
+      hasError = true;
+    }
+    if (!lastName) {
+      if (!newFieldErrors.name) newFieldErrors.name = ["This field is required"];
+      hasError = true;
+    }
+    if (!phone) {
+      newFieldErrors.phone = ["This field is required"];
+      hasError = true;
+    }
+    if (!companyName) {
+      newFieldErrors.company_name = ["This field is required"];
+      hasError = true;
+    }
+    if (!companySize) {
+      newFieldErrors.company_size = ["This field is required"];
+      hasError = true;
+    }
+    if (!agreed) {
+      newFieldErrors.agreed = ["This field is required"];
+      hasError = true;
+    }
+
+    let scheduledDate: Date | null = null;
+    if (selectedDate) {
+      scheduledDate = new Date(selectedDate);
       let hours = parseInt(hour, 10);
       if (period === "PM" && hours < 12) hours += 12;
       if (period === "AM" && hours === 12) hours = 0;
-      scheduledDate.setHours(hours, parseInt(minute, 10), 0, 0);
+      if (!isNaN(hours) && minute !== "") {
+        scheduledDate.setHours(hours, parseInt(minute, 10), 0, 0);
+      } else {
+        // Time missing error
+        hasError = true;
+        newFieldErrors.scheduled_at = ["Time is required."];
+      }
+    } else {
+      // Date missing error
+      hasError = true;
+      newFieldErrors.scheduled_at = ["Date is required."];
+    }
 
-      try {
-        const response = await axios.post(`${BASE_URL}/interview/client/call/`, {
-          name: `${firstName} ${lastName}`,
-          phone: fullPhone,
-          company_name: companyName,
-          company_size: companySize,
-          scheduled_at: scheduledDate.toISOString(),
-          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-          call_type: "SCHEDULE",
-        });
-        if (response.status === 200 || response.status === 201) {
-          setDemoSubmitted(true);
+    if (hasError) {
+      setFieldErrors(newFieldErrors);
+      // Scroll logic for local validation
+      if (newFieldErrors.name) {
+        firstNameRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+      } else if (newFieldErrors.phone) {
+        phoneRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+      } else if (newFieldErrors.company_name) {
+        companyNameRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+      } else if (newFieldErrors.company_size) {
+        companySizeRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+      } else if (newFieldErrors.scheduled_at) {
+        if (!selectedDate) {
+          dateTriggerRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+        } else {
+          timeContainerRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
         }
-      } catch (error: any) {
-        console.error("Error scheduling demo", error);
-        if (error.response?.data?.detail) {
+      } else if (newFieldErrors.agreed) {
+        termsRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+      return;
+    }
+
+    // if (firstName && lastName && phone && companyName && companySize && agreed && selectedDate && hour && minute) {
+    setIsLoading(true);
+    const dialCode = getCountryDialCode(countryIso);
+    const fullPhone = `${dialCode}${phone}`;
+
+
+    try {
+      const response = await axios.post(`${BASE_URL}/interview/client/call/`, {
+        name: `${firstName} ${lastName}`,
+        phone: fullPhone,
+        company_name: companyName,
+        company_size: companySize,
+        scheduled_at: scheduledDate ? scheduledDate.toISOString() : null,
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        call_type: "SCHEDULE",
+      });
+      if (response.status === 200 || response.status === 201) {
+        setDemoSubmitted(true);
+      }
+    } catch (error: any) {
+      console.error("Error scheduling demo", error);
+      if (error.response?.data) {
+        setFieldErrors(error.response.data);
+        if (error.response.data.detail) {
           setErrorMessage(error.response.data.detail);
         }
-      } finally {
-        setIsLoading(false);
+
+        // Scroll to first error
+        if (error.response.data.name) {
+          firstNameRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+        } else if (error.response.data.phone) {
+          phoneRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+        } else if (error.response.data.company_name) {
+          companyNameRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+        } else if (error.response.data.company_size) {
+          companySizeRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+        } else if (error.response.data.scheduled_at) {
+          if (!selectedDate) {
+            dateTriggerRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+          } else {
+            timeContainerRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+          }
+        } else if (error.response.data.agreed) {
+          termsRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
       }
+    } finally {
+      setIsLoading(false);
     }
+    // }
   };
 
   const handleBack = () => {
@@ -256,12 +430,19 @@ const CTASection = () => {
                     </label>
                     <Input
                       id="firstName"
+                      ref={firstNameRef}
                       placeholder="Steven"
                       value={firstName}
                       onChange={(e) => setFirstName(e.target.value)}
-                      className="h-12 border-input focus:border-accent focus:ring-accent/20 transition-all font-medium"
-                      required
+                      className={cn(
+                        "h-12 border-input focus:border-accent focus:ring-accent/20 transition-all font-medium",
+                        fieldErrors.name && "border-red-500 focus:border-red-500 focus:ring-red-500/20"
+                      )}
+                    //required
                     />
+                    {fieldErrors.name && (
+                      <p className="text-sm text-red-500 mt-1">{fieldErrors.name[0]}</p>
+                    )}
                   </div>
 
                   {/* Last Name */}
@@ -271,79 +452,96 @@ const CTASection = () => {
                     </label>
                     <Input
                       id="lastName"
+                      ref={lastNameRef}
                       placeholder="Smith"
                       value={lastName}
                       onChange={(e) => setLastName(e.target.value)}
-                      className="h-12 border-input focus:border-accent focus:ring-accent/20 transition-all font-medium"
-                      required
+                      className={cn(
+                        "h-12 border-input focus:border-accent focus:ring-accent/20 transition-all font-medium",
+                        fieldErrors.name && "border-red-500 focus:border-red-500 focus:ring-red-500/20"
+                      )}
+                    //required
                     />
+                    {fieldErrors.name && (
+                      <p className="text-sm text-red-500 mt-1">{fieldErrors.name[0]}</p>
+                    )}
                   </div>
 
                   {/* Phone Number */}
                   <div className="space-y-2 col-span-1 md:col-span-2">
-                    <label htmlFor="phone" className="text-sm font-medium text-headline">
-                      Phone Number
-                    </label>
                     <div className="flex flex-col sm:flex-row gap-6">
-                      <Popover open={openCombobox} onOpenChange={setOpenCombobox}>
-                        <PopoverTrigger asChild>
-                          <Button
-                            variant="outline"
-                            role="combobox"
-                            aria-expanded={openCombobox}
-                            className="w-full sm:w-[300px] h-12 justify-between border-input focus:ring-accent/20 focus:border-accent font-medium px-3"
-                          >
-                            <span className="flex items-center gap-2">
-                              {/* <span className="text-lg mb-1">{getCountryDialCode(countryIso) === "+1" && countryIso !== "US" && countryIso !== "CA" ? countries.find(c => c.code === countryIso)?.flag : countries.find(c => c.code === countryIso)?.flag}</span> */}
-                              <span className="">{countries.find(c => c.code === countryIso)?.name}</span>
-                              <span className="text-muted-foreground">{getCountryDialCode(countryIso)}</span>
-                            </span>
-                            <ChevronDown className="ml-2 h-4 w-4 opacity-50 shrink-0" />
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-[300px] p-0">
-                          <Command>
-                            <CommandInput placeholder="Search country & country code..." />
-                            <CommandList>
-                              <CommandEmpty>No country found.</CommandEmpty>
-                              <CommandGroup>
-                                {countries.map((country) => (
-                                  <CommandItem
-                                    key={country.code}
-                                    value={`${country.name} ${country.dial_code} ${country.flag} ${country.code}`}
-                                    onSelect={(currentValue) => {
-                                      setCountryIso(country.code);
-                                      setOpenCombobox(false);
-                                    }}
-                                    className="group"
-                                  >
-                                    <div className="flex items-center gap-2 w-full">
-                                      {/* <span className="text-lg w-4 text-center mb-1 shrink-0">{country.flag}</span> */}
-                                      <span className="text-nowrap">{country.name}</span>
-                                      <span className="text-muted-foreground whitespace-nowrap text-center group-data-[selected=true]:text-white transition-colors ml-auto">{country.dial_code}</span>
-                                    </div>
-                                    <Check
-                                      className={cn(
-                                        "ml-auto h-4 w-4 hidden",
-                                        countryIso === country.code ? "opacity-100" : "opacity-0"
-                                      )}
-                                    />
-                                  </CommandItem>
-                                ))}
-                              </CommandGroup>
-                            </CommandList>
-                          </Command>
-                        </PopoverContent>
-                      </Popover>
-                      <Input
-                        id="phone"
-                        type="tel"
-                        placeholder="(555) 000-0000"
-                        value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
-                        className="h-12 border-input focus:border-accent focus:ring-accent/20 transition-all font-medium w-full sm:w-auto sm:flex-1"
-                        required
-                      />
+                      <div className="flex flex-col space-y-2">
+                        <label className="text-sm font-medium text-headline">Country Code</label>
+                        <Popover open={openCombobox} onOpenChange={setOpenCombobox}>
+                          <PopoverTrigger asChild>
+                            <Button
+                              variant="outline"
+                              role="combobox"
+                              aria-expanded={openCombobox}
+                              className="w-full sm:w-[300px] h-12 justify-between border-input focus:ring-accent/20 focus:border-accent font-medium px-3"
+                            >
+                              <span className="flex items-center gap-2">
+                                {/* <span className="text-lg mb-1">{getCountryDialCode(countryIso) === "+1" && countryIso !== "US" && countryIso !== "CA" ? countries.find(c => c.code === countryIso)?.flag : countries.find(c => c.code === countryIso)?.flag}</span> */}
+                                <span className="">{countries.find(c => c.code === countryIso)?.name}</span>
+                                <span className="text-muted-foreground">{getCountryDialCode(countryIso)}</span>
+                              </span>
+                              <ChevronDown className="ml-2 h-4 w-4 opacity-50 shrink-0" />
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-[300px] p-0">
+                            <Command>
+                              <CommandInput placeholder="Search country & country code..." />
+                              <CommandList>
+                                <CommandEmpty>No country found.</CommandEmpty>
+                                <CommandGroup>
+                                  {countries.map((country) => (
+                                    <CommandItem
+                                      key={country.code}
+                                      value={`${country.name} ${country.dial_code} ${country.flag} ${country.code}`}
+                                      onSelect={(currentValue) => {
+                                        setCountryIso(country.code);
+                                        setOpenCombobox(false);
+                                      }}
+                                      className="group"
+                                    >
+                                      <div className="flex items-center gap-2 w-full">
+                                        {/* <span className="text-lg w-4 text-center mb-1 shrink-0">{country.flag}</span> */}
+                                        <span className="text-nowrap">{country.name}</span>
+                                        <span className="text-muted-foreground whitespace-nowrap text-center group-data-[selected=true]:text-white transition-colors ml-auto">{country.dial_code}</span>
+                                      </div>
+                                      <Check
+                                        className={cn(
+                                          "ml-auto h-4 w-4 hidden",
+                                          countryIso === country.code ? "opacity-100" : "opacity-0"
+                                        )}
+                                      />
+                                    </CommandItem>
+                                  ))}
+                                </CommandGroup>
+                              </CommandList>
+                            </Command>
+                          </PopoverContent>
+                        </Popover>
+                      </div>
+                      <div className="flex flex-col space-y-2 w-full sm:w-auto sm:flex-1">
+                        <label htmlFor="phone" className="text-sm font-medium text-headline">Phone Number</label>
+                        <Input
+                          id="phone"
+                          ref={phoneRef}
+                          type="tel"
+                          placeholder="(555) 000-0000"
+                          value={phone}
+                          onChange={(e) => setPhone(e.target.value)}
+                          className={cn(
+                            "h-12 border-input focus:border-accent focus:ring-accent/20 transition-all font-medium w-full",
+                            fieldErrors.phone && "border-red-500 focus:border-red-500 focus:ring-red-500/20"
+                          )}
+                        //required
+                        />
+                        {fieldErrors.phone && (
+                          <p className="text-sm text-red-500 mt-1">{fieldErrors.phone[0]}</p>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -356,12 +554,19 @@ const CTASection = () => {
                     </label>
                     <Input
                       id="companyName"
+                      ref={companyNameRef}
                       placeholder="Acme Inc."
                       value={companyName}
                       onChange={(e) => setCompanyName(e.target.value)}
-                      className="h-12 border-input focus:border-accent focus:ring-accent/20 transition-all font-medium"
-                      required
+                      className={cn(
+                        "h-12 border-input focus:border-accent focus:ring-accent/20 transition-all font-medium",
+                        fieldErrors.company_name && "border-red-500 focus:border-red-500 focus:ring-red-500/20"
+                      )}
+                    //required
                     />
+                    {fieldErrors.company_name && (
+                      <p className="text-sm text-red-500 mt-1">{fieldErrors.company_name[0]}</p>
+                    )}
                   </div>
 
                   {/* Company Size */}
@@ -369,8 +574,15 @@ const CTASection = () => {
                     <label htmlFor="companySize" className="text-sm font-medium text-headline">
                       Company Size
                     </label>
-                    <Select value={companySize} onValueChange={setCompanySize} required>
-                      <SelectTrigger className="h-12 border-input focus:ring-accent/20 focus:border-accent font-medium">
+                    <Select value={companySize} onValueChange={setCompanySize}
+                    //required
+                    >
+                      <SelectTrigger
+                        ref={companySizeRef}
+                        className={cn(
+                          "h-12 border-input focus:ring-accent/20 focus:border-accent font-medium",
+                          fieldErrors.company_size && "border-red-500 focus:border-red-500 focus:ring-red-500/20"
+                        )}>
                         <SelectValue placeholder="Select size" />
                       </SelectTrigger>
                       <SelectContent>
@@ -382,24 +594,33 @@ const CTASection = () => {
                         <SelectItem value="100+">100+ employees</SelectItem>
                       </SelectContent>
                     </Select>
+                    {fieldErrors.company_size && (
+                      <p className="text-sm text-red-500 mt-1">{fieldErrors.company_size[0]}</p>
+                    )}
                   </div>
                 </div>
 
                 {/* Consent Checkbox */}
-                <div className="flex items-start space-x-3 p-1">
-                  <Checkbox
-                    id="terms"
-                    checked={agreed}
-                    onCheckedChange={(checked) => setAgreed(checked as boolean)}
-                    required
-                    className="mt-0.5 data-[state=checked]:bg-accent data-[state=checked]:border-accent"
-                  />
-                  <label
-                    htmlFor="terms"
-                    className="text-sm text-muted-text leading-tight peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer select-none"
-                  >
-                    I have agreed to receive calls & sms from AI-RD1.com
-                  </label>
+                {/* Consent Checkbox */}
+                <div className="flex flex-col space-y-2" ref={termsRef}>
+                  <div className="flex items-start space-x-3 p-1">
+                    <Checkbox
+                      id="terms"
+                      checked={agreed}
+                      onCheckedChange={(checked) => setAgreed(checked as boolean)}
+                      //required
+                      className="mt-0.5 data-[state=checked]:bg-accent data-[state=checked]:border-accent"
+                    />
+                    <label
+                      htmlFor="terms"
+                      className="text-sm text-muted-text leading-tight peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer select-none"
+                    >
+                      I have agreed to receive calls & sms from AI-RD1.com
+                    </label>
+                  </div>
+                  {fieldErrors.agreed && (
+                    <p className="text-sm text-red-500 pl-1">{fieldErrors.agreed[0]}</p>
+                  )}
                 </div>
 
                 {/* Action Buttons Toggle */}
@@ -460,9 +681,11 @@ const CTASection = () => {
                       <PopoverTrigger asChild>
                         <Button
                           variant={"outline"}
+                          ref={dateTriggerRef}
                           className={cn(
                             "w-full h-12 justify-start text-left font-normal border-input hover:border-accent hover:bg-accent/5 transition-all text-muted-foreground",
-                            selectedDate && "text-headline border-accent bg-accent/5"
+                            selectedDate && "text-headline border-accent bg-accent/5",
+                            fieldErrors.scheduled_at && !selectedDate && "border-red-500 focus:border-red-500 focus:ring-red-500/20"
                           )}
                         >
                           <Calendar className={cn("mr-2 h-4 w-4", selectedDate ? "text-accent" : "opacity-50")} />
@@ -483,6 +706,9 @@ const CTASection = () => {
                         />
                       </PopoverContent>
                     </Popover>
+                    {fieldErrors.scheduled_at && !selectedDate && (
+                      <p className="text-sm text-red-500 mt-1">Date is required.</p>
+                    )}
                   </div>
 
                   {/* Segmented Unique Time Input */}
@@ -491,7 +717,12 @@ const CTASection = () => {
                       <Clock className="w-4 h-4 text-accent" />
                       Select Time
                     </label>
-                    <div className="flex items-center h-12 w-full rounded-md border border-input bg-background ring-offset-background focus-within:ring-2 focus-within:ring-accent focus-within:ring-offset-2 focus-within:border-accent transition-all overflow-hidden group hover:border-accent/50 cursor-text ">
+                    <div
+                      ref={timeContainerRef}
+                      className={cn(
+                        "flex items-center h-12 w-full rounded-md border border-input bg-background ring-offset-background focus-within:ring-2 focus-within:ring-accent focus-within:ring-offset-2 focus-within:border-accent transition-all overflow-hidden group hover:border-accent/50 cursor-text",
+                        fieldErrors.scheduled_at && selectedDate && "border-red-500 focus:border-red-500 focus:ring-red-500/20"
+                      )}>
                       {/* Hour */}
                       <input
                         ref={hourRef}
@@ -526,6 +757,9 @@ const CTASection = () => {
                         {period}
                       </button>
                     </div>
+                    {fieldErrors.scheduled_at && selectedDate && (
+                      <p className="text-sm text-red-500 mt-1">Time is required.</p>
+                    )}
                   </div>
 
                   {/* Submit Button for Schedule */}
