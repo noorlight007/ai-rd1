@@ -346,10 +346,24 @@ const CTASection = () => {
   };
 
   const handleBack = () => {
+    // if (phoneSubmitted || demoSubmitted) {
+      setFirstName("");
+      setLastName("");
+      setPhone("");
+      setCompanyName("");
+      setCompanySize("");
+      setAgreed(false);
+      setSelectedDate(undefined);
+      setHour("");
+      setMinute("");
+      setPeriod("AM");
+      setCountryIso("US");
+      setFieldErrors({});
+    // }
     setPhoneSubmitted(false);
     setDemoSubmitted(false);
     setErrorMessage(null);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   return (
