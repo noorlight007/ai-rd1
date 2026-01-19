@@ -349,6 +349,7 @@ const CTASection = () => {
     setPhoneSubmitted(false);
     setDemoSubmitted(false);
     setErrorMessage(null);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   return (
