@@ -284,14 +284,14 @@ const CTASection = () => {
                     <label htmlFor="phone" className="text-sm font-medium text-headline">
                       Phone Number
                     </label>
-                    <div className="flex gap-2">
+                    <div className="flex flex-col sm:flex-row gap-6">
                       <Popover open={openCombobox} onOpenChange={setOpenCombobox}>
                         <PopoverTrigger asChild>
                           <Button
                             variant="outline"
                             role="combobox"
                             aria-expanded={openCombobox}
-                            className="w-[300px] h-12 justify-between border-input focus:ring-accent/20 focus:border-accent font-medium px-3"
+                            className="w-full sm:w-[300px] h-12 justify-between border-input focus:ring-accent/20 focus:border-accent font-medium px-3"
                           >
                             <span className="flex items-center gap-2">
                               {/* <span className="text-lg mb-1">{getCountryDialCode(countryIso) === "+1" && countryIso !== "US" && countryIso !== "CA" ? countries.find(c => c.code === countryIso)?.flag : countries.find(c => c.code === countryIso)?.flag}</span> */}
@@ -301,7 +301,7 @@ const CTASection = () => {
                             <ChevronDown className="ml-2 h-4 w-4 opacity-50 shrink-0" />
                           </Button>
                         </PopoverTrigger>
-                        <PopoverContent className="w-[300] p-0">
+                        <PopoverContent className="w-[300px] p-0">
                           <Command>
                             <CommandInput placeholder="Search country & country code..." />
                             <CommandList>
@@ -341,7 +341,7 @@ const CTASection = () => {
                         placeholder="(555) 000-0000"
                         value={phone}
                         onChange={(e) => setPhone(e.target.value)}
-                        className="h-12 border-input focus:border-accent focus:ring-accent/20 transition-all font-medium flex-1"
+                        className="h-12 border-input focus:border-accent focus:ring-accent/20 transition-all font-medium w-full sm:w-auto sm:flex-1"
                         required
                       />
                     </div>
