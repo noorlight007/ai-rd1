@@ -20,6 +20,7 @@ const CTASection = () => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
   const [companyName, setCompanyName] = useState("");
   const [companySize, setCompanySize] = useState("");
   const [agreed, setAgreed] = useState(false);
@@ -48,6 +49,7 @@ const CTASection = () => {
   const firstNameRef = useRef<HTMLInputElement>(null);
   const lastNameRef = useRef<HTMLInputElement>(null);
   const phoneRef = useRef<HTMLInputElement>(null);
+  const emailRef = useRef<HTMLInputElement>(null);
   const companyNameRef = useRef<HTMLInputElement>(null);
   const companySizeRef = useRef<HTMLButtonElement>(null);
   const termsRef = useRef<HTMLDivElement>(null);
@@ -146,6 +148,11 @@ const CTASection = () => {
       hasError = true;
     }
 
+    if (!email) {
+      newFieldErrors.email = ["This field is required"];
+      hasError = true;
+    }
+
     if (!phone) {
       newFieldErrors.phone = ["This field is required"];
       hasError = true;
@@ -169,6 +176,8 @@ const CTASection = () => {
       // Scroll to first error
       if (newFieldErrors.name) {
         firstNameRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+      } else if (newFieldErrors.email) {
+        emailRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
       } else if (newFieldErrors.phone) {
         phoneRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
       } else if (newFieldErrors.company_name) {
@@ -189,6 +198,7 @@ const CTASection = () => {
       const response = await axios.post(`${BASE_URL}/interview/client/call/`, {
         name: `${firstName} ${lastName}`,
         phone: fullPhone,
+        email: email,
         company_name: companyName,
         company_size: companySize,
         call_type: "NOW",
@@ -208,6 +218,8 @@ const CTASection = () => {
         if (error.response.data.name) {
           firstNameRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
           // If name error, maybe both? prioritize first name
+        } else if (error.response.data.email) {
+          emailRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
         } else if (error.response.data.phone) {
           phoneRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
         } else if (error.response.data.company_name) {
@@ -239,6 +251,10 @@ const CTASection = () => {
     }
     if (!lastName) {
       if (!newFieldErrors.name) newFieldErrors.name = ["This field is required"];
+      hasError = true;
+    }
+    if (!email) {
+      newFieldErrors.email = ["This field is required"];
       hasError = true;
     }
     if (!phone) {
@@ -282,6 +298,8 @@ const CTASection = () => {
       // Scroll logic for local validation
       if (newFieldErrors.name) {
         firstNameRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+      } else if (newFieldErrors.email) {
+        emailRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
       } else if (newFieldErrors.phone) {
         phoneRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
       } else if (newFieldErrors.company_name) {
@@ -310,6 +328,7 @@ const CTASection = () => {
       const response = await axios.post(`${BASE_URL}/interview/client/call/`, {
         name: `${firstName} ${lastName}`,
         phone: fullPhone,
+        email: email,
         company_name: companyName,
         company_size: companySize,
         scheduled_at: scheduledDate ? scheduledDate.toISOString() : null,
@@ -330,6 +349,8 @@ const CTASection = () => {
         // Scroll to first error
         if (error.response.data.name) {
           firstNameRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+        } else if (error.response.data.email) {
+          emailRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
         } else if (error.response.data.phone) {
           phoneRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
         } else if (error.response.data.company_name) {
@@ -357,6 +378,7 @@ const CTASection = () => {
     setFirstName("");
     setLastName("");
     setPhone("");
+    setEmail("");
     setCompanyName("");
     setCompanySize("");
     setAgreed(false);
@@ -486,6 +508,29 @@ const CTASection = () => {
                     />
                     {fieldErrors.name && (
                       <p className="text-sm text-red-500 mt-1">{fieldErrors.name[0]}</p>
+                    )}
+                  </div>
+
+                  {/* Email */}
+                  <div className="space-y-2 col-span-1 md:col-span-2">
+                    <label htmlFor="email" className="text-sm font-medium text-headline">
+                      Email
+                    </label>
+                    <Input
+                      id="email"
+                      ref={emailRef}
+                      type="email"
+                      placeholder="steven@example.com"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className={cn(
+                        "h-12 border-input focus:border-accent focus:ring-accent/20 transition-all font-medium",
+                        fieldErrors.email && "border-red-500 focus:border-red-500 focus:ring-red-500/20"
+                      )}
+                    //required
+                    />
+                    {fieldErrors.email && (
+                      <p className="text-sm text-red-500 mt-1">{fieldErrors.email[0]}</p>
                     )}
                   </div>
 
