@@ -2,7 +2,16 @@
 
 import axios from "axios";
 
+import { headers } from "next/headers";
+
 export async function getCountryCode() {
+    const headersList = await headers();
+    const vercelCountry = headersList.get("x-vercel-ip-country");
+
+    if (vercelCountry) {
+        return vercelCountry;
+    }
+
     try {
         // Try primary provider
         const response = await axios.get("https://ipapi.co/json/");
