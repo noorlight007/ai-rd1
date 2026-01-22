@@ -13,6 +13,7 @@ import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import axios from "axios";
 import { countries } from "@/lib/countries";
+import { getCountryCode } from "@/actions/geo";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
@@ -62,6 +63,25 @@ const CTASection = () => {
       resultRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
     }
   }, [phoneSubmitted, demoSubmitted, errorMessage]);
+
+
+  // ... existing imports ...
+
+  // Inside component:
+  useEffect(() => {
+    const fetchCountry = async () => {
+      const code = await getCountryCode();
+      if (code) {
+        const detectedCountry = countries.find(
+          (c) => c.code === code.toUpperCase()
+        );
+        if (detectedCountry) {
+          setCountryIso(detectedCountry.code);
+        }
+      }
+    };
+    fetchCountry();
+  }, []);
 
   const handleHourChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let val = e.target.value.replace(/\D/g, "");
