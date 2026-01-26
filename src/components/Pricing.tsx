@@ -133,13 +133,13 @@ const Pricing = () => {
               </ul>
 
               {/* CTA Button */}
-              <Button
+              {/* <Button
                 variant={tier.popular ? "cta" : "ctaSecondary"}
                 size="lg"
                 className="w-full"
               >
                 {tier.cta}
-              </Button>
+              </Button> */}
             </div>
           ))}
         </div>
