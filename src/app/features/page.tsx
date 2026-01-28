@@ -14,6 +14,7 @@ import {
     CheckCircle2,
     Phone
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 const coreFeatures = [
     {
@@ -90,6 +91,7 @@ const integrationOptions = [
 ];
 
 const FeaturesPage = () => {
+    const router = useRouter();
     return (
         <div className="min-h-screen bg-background">
             <Header />
@@ -113,7 +115,7 @@ const FeaturesPage = () => {
                                 memory, and compliance—so your team can focus on what matters most.
                             </p>
                             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                                <Button variant="cta" size="xl" className="w-full sm:w-auto group">
+                                <Button variant="cta" size="xl" className="w-full sm:w-auto group" onClick={() => router.push("/try-it")}>
                                     Try a Free Call
                                     <ArrowRight size={18} className="ml-1 transition-transform group-hover:translate-x-1" />
                                 </Button>

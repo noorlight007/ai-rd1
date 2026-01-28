@@ -18,7 +18,7 @@ import {
     Wrench,
     ArrowRight
 } from "lucide-react";
-
+import { useRouter } from "next/navigation";
 const sectors = [
     {
         icon: Briefcase,
@@ -155,6 +155,7 @@ const sectors = [
 ];
 
 const UseCasesPage = () => {
+    const router = useRouter();
     return (
         <div className="min-h-screen bg-background">
             <Header />
@@ -178,7 +179,7 @@ const UseCasesPage = () => {
                                 to real estate, sales to support.
                             </p>
                             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                                <Button variant="cta" size="xl" className="w-full sm:w-auto group">
+                                <Button variant="cta" size="xl" className="w-full sm:w-auto group" onClick={() => router.push("/try-it")}>
                                     Try a Free Call
                                     <ArrowRight size={18} className="ml-1 transition-transform group-hover:translate-x-1" />
                                 </Button>
