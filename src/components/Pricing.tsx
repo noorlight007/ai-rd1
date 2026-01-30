@@ -1,36 +1,39 @@
 import { Check, Building, Building2, Rocket } from "lucide-react";
-import { Button } from "@/components/ui/button";
+// import { Button } from "@/components/ui/button";
 
 const pricingTiers = [
   {
-    name: "Small Business",
+    name: "Starter",
     icon: Building,
-    price: "£0.75",
-    unit: " per minute + VAT",
-    description: "Ideal for growing businesses starting with AI voice calls.",
-    minimumMinutes: "300 minutes per month",
+    price: "£250",
+    unit: " per month + VAT",
+    description: "Perfect for getting started with AI voice calls.",
+    minimumMinutes: "300 minutes included",
     features: [
-      "CRM sync included",
-      "Basic workflows",
-      "Email support",
-      "Standard analytics",
+      "Paid in advance",
+      "Dedicated onboarding & support",
+      "£250 one-off set-up / development fee",
+      "After 12 months: £250 returned as FREE minutes",
+      "No contract – cancel anytime",
+      "Top-up minutes: £0.80 per minute",
     ],
     cta: "Get Started",
     popular: false,
   },
   {
-    name: "Mid Business",
+    name: "Medium",
     icon: Building2,
-    price: "£0.75",
-    unit: " per minute + VAT",
-    description: "For teams scaling their voice automation.",
-    minimumMinutes: "1,000 minutes per month",
+    price: "£750",
+    unit: " per month + VAT",
+    description: "For teams scaling voice automation with more included minutes.",
+    minimumMinutes: "1,000 minutes included",
     features: [
-      "Everything in Small Business",
-      "Automated tasks & call summaries",
-      "Advanced CRM integration",
-      "Priority email support",
-      "Detailed analytics dashboard",
+      "Paid in advance",
+      "Dedicated onboarding & support",
+      "£250 one-off set-up / development fee",
+      "After 12 months: £250 returned as FREE minutes",
+      "No contract – cancel anytime",
+      "Top-up minutes: £0.80 per minute",
     ],
     cta: "Get Started",
     popular: true,
@@ -38,18 +41,16 @@ const pricingTiers = [
   {
     name: "Enterprise",
     icon: Rocket,
-    price: "Custom Pricing",
+    price: "Pricing by negotiation",
     unit: "",
-    description: "Tailored solutions for large-scale operations.",
-    minimumMinutes: "3,000+ minutes per month",
+    description: "Tailored packages for larger operations and custom requirements.",
+    minimumMinutes: "Minutes tailored to usage",
     subtext: "Volume discounts available",
     features: [
-      "Everything in Mid Business",
-      "SLA priority support",
-      "Custom integrations",
-      "Dedicated account manager",
-      "Custom reporting",
-      "White-label options",
+      "Custom monthly package",
+      "Dedicated onboarding & support",
+      "Volume discounts",
+      "Custom call flows & integrations",
     ],
     cta: "Contact Sales",
     popular: false,
@@ -69,7 +70,7 @@ const Pricing = () => {
             Simple, Transparent Pricing
           </h2>
           <p className="text-lg text-body">
-            Pay only for what you use. No hidden fees, no surprises.
+            Monthly packages with included minutes. No contract — cancel anytime.
           </p>
         </div>
 
@@ -95,17 +96,27 @@ const Pricing = () => {
 
               {/* Icon & Title */}
               <div className="flex items-center gap-3 mb-4">
-                <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                  tier.popular ? "bg-accent/10" : "bg-secondary"
-                }`}>
-                  <tier.icon className={`w-5 h-5 ${tier.popular ? "accent-text" : "text-muted-text"}`} />
+                <div
+                  className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                    tier.popular ? "bg-accent/10" : "bg-secondary"
+                  }`}
+                >
+                  <tier.icon
+                    className={`w-5 h-5 ${
+                      tier.popular ? "accent-text" : "text-muted-text"
+                    }`}
+                  />
                 </div>
-                <h3 className="text-xl font-semibold text-headline">{tier.name}</h3>
+                <h3 className="text-xl font-semibold text-headline">
+                  {tier.name}
+                </h3>
               </div>
 
               {/* Price */}
               <div className="mb-2">
-                <span className="text-4xl font-bold text-headline">{tier.price}</span>
+                <span className="text-4xl font-bold text-headline">
+                  {tier.price}
+                </span>
                 <span className="text-muted-text">{tier.unit}</span>
               </div>
 
@@ -114,9 +125,9 @@ const Pricing = () => {
                 <p className="text-sm text-accent mb-2">{tier.subtext}</p>
               )}
 
-              {/* Minimum */}
+              {/* Included minutes / minimum */}
               <p className="text-sm text-muted-text mb-4">
-                Minimum: {tier.minimumMinutes}
+                {tier.minimumMinutes}
               </p>
 
               {/* Description */}
@@ -133,18 +144,18 @@ const Pricing = () => {
               </ul>
 
               {/* CTA Button */}
-              {/* <Button
+              {/*
+              <Button
                 variant={tier.popular ? "cta" : "ctaSecondary"}
                 size="lg"
                 className="w-full"
               >
                 {tier.cta}
-              </Button> */}
+              </Button>
+              */}
             </div>
           ))}
         </div>
-
-        
       </div>
     </section>
   );
