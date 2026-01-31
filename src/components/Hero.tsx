@@ -73,7 +73,6 @@ const Hero = () => {
             <p className="text-sm text-white/60 mb-4">Trusted by innovative companies worldwide</p>
             <div className="flex items-center justify-center gap-8 opacity-60">
               <div className="text-white font-semibold text-lg"><a href="https://www.rd1.co.uk" target="_blank">Recruitment Direct</a></div>
-              <div className="text-white font-semibold text-lg"><a href="https://aryansoftbd.com" target="_blank">Aryan Soft</a></div>
             </div>
           </div>
         </div>
