@@ -184,6 +184,15 @@
     transform: translateY(-2px);
   }
 
+  /* NEW: bigger jump */
+  .card-hover-lg {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .card-hover-lg:hover {
+    box-shadow: 0 0 0 4px hsl(var(--glow-focus)), 0 4px 20px hsl(var(--glow-spread));
+    transform: translateY(-14px); /* increase/decrease this */
+  }
+
   .gradient-accent {
     background: linear-gradient(135deg, hsl(var(--accent)) 0%, hsl(var(--accent-deep)) 100%);
   }

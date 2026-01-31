@@ -83,7 +83,7 @@ const Pricing = () => {
                 tier.popular
                   ? "border-accent shadow-lg ring-2 ring-accent/20"
                   : "border-border-card"
-              } card-hover flex flex-col`}
+              } card-hover-lg flex flex-col`}
             >
               {/* Popular badge */}
               {tier.popular && (
