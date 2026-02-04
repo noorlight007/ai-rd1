@@ -68,19 +68,27 @@ const CTASection = () => {
   // ... existing imports ...
 
   // Inside component:
-  useEffect(() => {
-    const fetchCountry = async () => {
-      const code = await getCountryCode();
-      if (code) {
-        const detectedCountry = countries.find(
-          (c) => c.code === code.toUpperCase()
-        );
-        if (detectedCountry) {
-          setCountryIso(detectedCountry.code);
-        }
+  const fetchCountry = async () => {
+    const code = await getCountryCode();
+    if (code) {
+      const detectedCountry = countries.find(
+        (c) => c.code === code.toUpperCase()
+      );
+      if (detectedCountry) {
+        setCountryIso(detectedCountry.code);
       }
-    };
+    }
+  };
+
+  useEffect(() => {
     fetchCountry();
+
+    const handleSync = () => {
+      fetchCountry();
+    };
+
+    window.addEventListener("trigger-country-sync", handleSync);
+    return () => window.removeEventListener("trigger-country-sync", handleSync);
   }, []);
 
   const handleHourChange = (e: React.ChangeEvent<HTMLInputElement>) => {

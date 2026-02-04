@@ -7,6 +7,10 @@ import Link from "next/link";
 const Hero = () => {
   const scrollToCTA = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
+
+    // Trigger country sync in CTASection
+    window.dispatchEvent(new CustomEvent("trigger-country-sync"));
+
     const element = document.getElementById("cta");
     if (element) {
       element.scrollIntoView({ behavior: "smooth" });
