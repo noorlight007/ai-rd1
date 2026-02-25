@@ -76,12 +76,11 @@ const Footer = () => {
           <div>
             <h4 className="font-semibold text-headline mb-4">Address</h4>
             <div className="space-y-1 text-sm text-body">
-              <p className="font-medium text-headline">Swiftwave FZ-LLC</p>
-              <p>RAKEZ Business Zone,</p>
-              <p>Al Nakheel Area,</p>
-              <p>P.O. Box No. 10055,</p>
-              <p>Ras Al Khaimah,</p>
-              <p>United Arab Emirates</p>
+              <p className="font-medium text-headline">AI-RD1™ | Operated by Recruitment Direct UK Limited</p>
+              <p>📍 Herkimer House, Mill Road Industrial Estate, </p>
+              <p>Linlithgow, EH49 7SF, Scotland, United Kingdom</p>
+              <p>🏢 Registered in Scotland No. SC301107</p>
+              <p>✉️ <a href="mailto:sales@rd1.co.uk">sales@rd1.co.uk</a></p>
             </div>
           </div>
 
