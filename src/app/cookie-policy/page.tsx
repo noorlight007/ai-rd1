@@ -4,15 +4,14 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
 const sections = [
-  { id: "what-are-cookies", title: "1. What Are Cookies" },
-  { id: "how-we-use", title: "2. How We Use Cookies" },
+  { id: "introduction", title: "1. Introduction" },
+  { id: "what-are-cookies", title: "2. What Are Cookies?" },
   { id: "types", title: "3. Types of Cookies We Use" },
-  { id: "not-used-for", title: "4. What We Do NOT Use Cookies For" },
-  { id: "third-party", title: "5. Third-Party Cookies" },
-  { id: "consent", title: "6. Cookie Consent & Control" },
-  { id: "alignment", title: "7. Legal & Regulatory Alignment" },
-  { id: "changes", title: "8. Changes to This Cookie Policy" },
-  { id: "contact", title: "9. Contact Information" },
+  { id: "consent", title: "4. Consent" },
+  { id: "managing", title: "5. Managing Cookies" },
+  { id: "third-party", title: "6. Third-Party Cookies" },
+  { id: "changes", title: "7. Changes to This Policy" },
+  { id: "company", title: "Company Information" },
 ];
 
 function SectionTitle({
@@ -41,27 +40,21 @@ export default function CookiePolicyPage() {
         {/* Header */}
         <div className="border-b border-border">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
-            <div className="">
+            <div>
               <p className="text-sm text-muted-text mb-2">Legal</p>
               <h1 className="text-3xl sm:text-4xl font-bold text-headline tracking-tight">
-                Swiftwave Cookie Policy
+                AI-RD1 Cookie Policy
               </h1>
 
-              <div className="mt-6 rounded-2xl border border-border bg-card/40 p-5 sm:p-6">
+              <div className="mt-6 rounded-2xl border border-border bg-card/40 p-5 sm:p-6 space-y-3">
                 <p className="text-sm sm:text-base text-body leading-relaxed">
-                  This Cookie Policy explains how Swiftwave FZ-LLC, United Arab Emirates
-                  (&quot;Swiftwave&quot;, &quot;we&quot;, &quot;us&quot;) uses cookies and
-                  similar technologies on its websites and platforms, including <b>CallPilot.pro</b>
+                  AI-RD1 is a trading name of Recruitment Direct UK Ltd (Company Number:
+                  SC301107), registered in Scotland.
                 </p>
-                <p className="mt-3 text-sm sm:text-base text-body leading-relaxed">
-                  This policy should be read alongside our{" "}
-                  <a
-                    href="/privacy-policy"
-                    className="underline underline-offset-4 hover:text-headline transition-colors"
-                  >
-                    Privacy Policy
-                  </a>
-                  .
+
+                <p className="text-sm sm:text-base text-body">
+                  <span className="text-muted-text">Effective Date:</span>{" "}
+                  <span className="font-medium">11 February 2026</span>
                 </p>
               </div>
             </div>
@@ -99,30 +92,38 @@ export default function CookiePolicyPage() {
               <div className="max-w-3xl space-y-10">
                 {/* 1 */}
                 <section className="space-y-4">
-                  <SectionTitle id="what-are-cookies">1. What Are Cookies</SectionTitle>
+                  <SectionTitle id="introduction">1. Introduction</SectionTitle>
                   <p className="text-body leading-relaxed">
-                    Cookies are small text files placed on your device when you visit a website.
-                    They are widely used to make websites function properly, improve security,
-                    and enhance user experience.
+                    This Cookie Policy explains how AI-RD1 uses cookies and similar technologies
+                    on its website and platform.
                   </p>
                   <p className="text-body leading-relaxed">
-                    Cookies do not give us access to your device or personal files.
+                    This policy should be read alongside the{" "}
+                    <a
+                      href="/privacy-policy"
+                      className="underline underline-offset-4 hover:text-headline transition-colors"
+                    >
+                      AI-RD1 Privacy Policy
+                    </a>
+                    .
+                  </p>
+                  <p className="text-body leading-relaxed">
+                    We comply with the UK GDPR, the Data Protection Act 2018, and the Privacy and
+                    Electronic Communications Regulations (PECR).
                   </p>
                 </section>
 
                 {/* 2 */}
                 <section className="space-y-4">
-                  <SectionTitle id="how-we-use">2. How We Use Cookies</SectionTitle>
+                  <SectionTitle id="what-are-cookies">2. What Are Cookies?</SectionTitle>
                   <p className="text-body leading-relaxed">
-                    Swiftwave uses cookies only where necessary to operate its websites and
-                    platforms.
+                    Cookies are small text files placed on a user&apos;s device when visiting a
+                    website. They help websites function effectively and improve user experience.
                   </p>
-                  <p className="text-body leading-relaxed">We do not use cookies to:</p>
-                  <ul className="list-disc pl-5 text-body space-y-1">
-                    <li>Track individuals across unrelated websites</li>
-                    <li>Collect CRM personal data</li>
-                    <li>Store call recordings, call text, or call transcripts</li>
-                  </ul>
+                  <p className="text-body leading-relaxed">
+                    Cookies may be session-based (deleted when the browser is closed) or
+                    persistent (stored for a defined period).
+                  </p>
                 </section>
 
                 {/* 3 */}
@@ -130,141 +131,136 @@ export default function CookiePolicyPage() {
                   <SectionTitle id="types">3. Types of Cookies We Use</SectionTitle>
 
                   <div className="rounded-2xl border border-border bg-card/40 p-5 sm:p-6 space-y-3">
-                    <h3 className="font-semibold text-headline">Strictly Necessary Cookies</h3>
+                    <h3 className="font-semibold text-headline">3.1 Strictly Necessary Cookies</h3>
                     <p className="text-body leading-relaxed">
-                      These cookies are essential for the operation of our websites and platforms
-                      and cannot be disabled.
+                      These cookies are essential for the operation of the website and platform.
                     </p>
-                    <p className="text-body leading-relaxed">They are used for:</p>
+                    <p className="text-body leading-relaxed">They may include:</p>
                     <ul className="list-disc pl-5 text-body space-y-1">
-                      <li>User authentication and session management</li>
-                      <li>Security and fraud prevention</li>
-                      <li>Load balancing and platform stability</li>
+                      <li>Authentication cookies</li>
+                      <li>Security cookies</li>
+                      <li>Session management cookies</li>
+                      <li>Load balancing cookies</li>
                     </ul>
                     <p className="text-body leading-relaxed">
-                      Without these cookies, core services may not function correctly.
+                      These cookies do not require user consent under PECR.
                     </p>
                   </div>
 
                   <div className="rounded-2xl border border-border bg-card/40 p-5 sm:p-6 space-y-3">
-                    <h3 className="font-semibold text-headline">Analytics Cookies (Limited Use)</h3>
+                    <h3 className="font-semibold text-headline">3.2 Analytics Cookies</h3>
                     <p className="text-body leading-relaxed">
-                      Where enabled, analytics cookies may be used to:
+                      Analytics cookies help us understand how visitors interact with the website,
+                      including:
                     </p>
                     <ul className="list-disc pl-5 text-body space-y-1">
-                      <li>Understand how visitors interact with our website</li>
-                      <li>Improve performance and usability</li>
-                    </ul>
-                    <p className="text-body leading-relaxed">Analytics data is:</p>
-                    <ul className="list-disc pl-5 text-body space-y-1">
-                      <li>Aggregated</li>
-                      <li>Anonymised where possible</li>
-                      <li>Not used to identify individual users</li>
+                      <li>Page visits</li>
+                      <li>Traffic patterns</li>
+                      <li>Performance metrics</li>
                     </ul>
                     <p className="text-body leading-relaxed">
-                      Analytics cookies are only used where legally permitted and subject to
-                      user consent where required.
+                      Analytics cookies are only activated where valid consent has been obtained.
+                    </p>
+                  </div>
+
+                  <div className="rounded-2xl border border-border bg-card/40 p-5 sm:p-6 space-y-3">
+                    <h3 className="font-semibold text-headline">3.3 Functional Cookies</h3>
+                    <p className="text-body leading-relaxed">
+                      Functional cookies enable enhanced website functionality, such as remembering
+                      user preferences.
+                    </p>
+                    <p className="text-body leading-relaxed">
+                      These are used only where appropriate consent has been provided.
+                    </p>
+                  </div>
+
+                  <div className="rounded-2xl border border-border bg-card/40 p-5 sm:p-6 space-y-3">
+                    <h3 className="font-semibold text-headline">
+                      3.4 Marketing or Advertising Cookies
+                    </h3>
+                    <p className="text-body leading-relaxed">
+                      Where marketing tools are used, such cookies may measure advertising
+                      effectiveness or track campaign performance.
+                    </p>
+                    <p className="text-body leading-relaxed">
+                      Marketing cookies are only activated where valid consent has been obtained.
                     </p>
                   </div>
                 </section>
 
                 {/* 4 */}
                 <section className="space-y-4">
-                  <SectionTitle id="not-used-for">4. What We Do NOT Use Cookies For</SectionTitle>
-                  <p className="text-body leading-relaxed">Swiftwave does not use cookies to:</p>
+                  <SectionTitle id="consent">4. Consent</SectionTitle>
+                  <p className="text-body leading-relaxed">
+                    Under PECR, non-essential cookies require user consent.
+                  </p>
+                  <p className="text-body leading-relaxed">Where required:</p>
                   <ul className="list-disc pl-5 text-body space-y-1">
-                    <li>Store personal data from CRM systems</li>
-                    <li>Store call recordings, transcripts, or call text</li>
-                    <li>Build behavioural or advertising profiles</li>
-                    <li>Sell or share data with advertisers</li>
+                    <li>Users are provided with a clear cookie notice</li>
+                    <li>Non-essential cookies are not activated until consent is given</li>
+                    <li>
+                      Users may withdraw consent at any time through the website&apos;s cookie
+                      settings
+                    </li>
                   </ul>
+                  <p className="text-body leading-relaxed">
+                    Strictly necessary cookies may operate without consent.
+                  </p>
                 </section>
 
                 {/* 5 */}
                 <section className="space-y-4">
-                  <SectionTitle id="third-party">5. Third-Party Cookies</SectionTitle>
+                  <SectionTitle id="managing">5. Managing Cookies</SectionTitle>
                   <p className="text-body leading-relaxed">
-                    Some third-party services used for security, hosting, or analytics may place
-                    cookies on your device.
+                    Users may control or delete cookies through their browser settings.
                   </p>
-                  <p className="text-body leading-relaxed">All third-party providers are:</p>
-                  <ul className="list-disc pl-5 text-body space-y-1">
-                    <li>Carefully selected</li>
-                    <li>Contractually bound to comply with data protection laws</li>
-                    <li>Restricted to processing data only for their intended purpose</li>
-                  </ul>
+                  <p className="text-body leading-relaxed">
+                    Disabling certain cookies may affect website functionality.
+                  </p>
                 </section>
 
                 {/* 6 */}
                 <section className="space-y-4">
-                  <SectionTitle id="consent">6. Cookie Consent &amp; Control</SectionTitle>
+                  <SectionTitle id="third-party">6. Third-Party Cookies</SectionTitle>
                   <p className="text-body leading-relaxed">
-                    When you visit our website, you may see a cookie banner allowing you to:
+                    Some cookies may be set by third-party service providers, including analytics
+                    or hosting providers.
                   </p>
-                  <ul className="list-disc pl-5 text-body space-y-1">
-                    <li>Accept non-essential cookies</li>
-                    <li>Reject non-essential cookies</li>
-                    <li>Manage cookie preferences</li>
-                  </ul>
                   <p className="text-body leading-relaxed">
-                    You can also control cookies through your browser settings. Please note that
-                    disabling strictly necessary cookies may affect site functionality.
+                    Such providers are subject to contractual safeguards and applicable data
+                    protection laws.
                   </p>
                 </section>
 
                 {/* 7 */}
                 <section className="space-y-4">
-                  <SectionTitle id="alignment">7. Legal &amp; Regulatory Alignment</SectionTitle>
+                  <SectionTitle id="changes">7. Changes to This Policy</SectionTitle>
                   <p className="text-body leading-relaxed">
-                    Swiftwave&apos;s use of cookies is designed to align with:
-                  </p>
-                  <ul className="list-disc pl-5 text-body space-y-1">
-                    <li>EU GDPR</li>
-                    <li>UK GDPR</li>
-                    <li>UAE Personal Data Protection Law (PDPL)</li>
-                    <li>Other comparable global privacy and data protection laws</li>
-                  </ul>
-                  <p className="text-body leading-relaxed">We apply principles of:</p>
-                  <ul className="list-disc pl-5 text-body space-y-1">
-                    <li>Data minimisation</li>
-                    <li>Purpose limitation</li>
-                    <li>Transparency</li>
-                  </ul>
-                </section>
-
-                {/* 8 */}
-                <section className="space-y-4">
-                  <SectionTitle id="changes">8. Changes to This Cookie Policy</SectionTitle>
-                  <p className="text-body leading-relaxed">
-                    We may update this Cookie Policy from time to time. The &quot;Last updated&quot;
-                    date reflects the current version.
-                  </p>
-                  <p className="text-body leading-relaxed">
-                    Continued use of our websites constitutes acceptance of the updated policy.
+                    This Cookie Policy may be updated periodically to reflect legal or operational
+                    changes.
                   </p>
                 </section>
 
-                {/* 9 */}
+                {/* Company info */}
                 <section className="space-y-4">
-                  <SectionTitle id="contact">9. Contact Information</SectionTitle>
+                  <SectionTitle id="company">Company Information</SectionTitle>
                   <div className="rounded-2xl border border-border bg-card/40 p-5 sm:p-6">
-                    <p className="text-body leading-relaxed">
-                      For questions about this Cookie Policy:
-                    </p>
-
-                    <div className="mt-4 space-y-2 text-body">
-                      <p className="font-medium text-headline">Swiftwave FZ-LLC</p>
-                      <p>United Arab Emirates</p>
+                    <div className="space-y-2 text-body">
+                      <p className="font-medium text-headline">Recruitment Direct UK Ltd</p>
                       <p>
-                        <span className="text-muted-text">Registration number:</span> 47028798
+                        <span className="text-muted-text">Company Number:</span> SC301107
+                      </p>
+                      <p>Registered in Scotland</p>
+                      <p>
+                        <span className="text-muted-text">Incorporated:</span> 2006
                       </p>
                       <p>
                         <span className="text-muted-text">Email:</span>{" "}
                         <a
-                          href="mailto:contact@swiftwave.ai"
+                          href="mailto:accounts@rd1.co.uk"
                           className="text-body hover:text-headline underline underline-offset-4"
                         >
-                          contact@swiftwave.ai
+                          accounts@rd1.co.uk
                         </a>
                       </p>
                     </div>
