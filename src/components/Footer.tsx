@@ -89,11 +89,18 @@ const Footer = () => {
         </div>
 
         {/* Bottom Bar */}
-        <div className="mt-12 pt-8 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-sm text-muted-text">
-            © 2026 AI-RD1 , Operated by Swiftwave FZ-LLC. All rights reserved.
-          </p>
-          
+        <div className="mt-12 pt-8 border-t border-border">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="text-center sm:text-left">
+              <p className="text-sm text-muted-text">
+                © 2026 AI-RD1 is a trading name of Recruitment Direct UK Ltd (Company No. SC301107),
+                registered in Scotland.
+              </p>
+              <p className="text-xs text-muted-text/80 mt-1">
+                Incorporated 2006. All rights reserved.
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </footer>
